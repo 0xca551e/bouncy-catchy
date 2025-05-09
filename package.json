@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "squint-cljs": "^0.8.146",
     "vite": "^6.3.5"
   }
 }
