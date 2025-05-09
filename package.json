@@ -11,5 +11,8 @@
   "devDependencies": {
     "squint-cljs": "^0.8.146",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "three": "^0.176.0"
   }
 }
