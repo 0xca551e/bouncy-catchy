@@ -1,7 +1,14 @@
 (ns main
   (:require ["three" :as three]
             ["@dimforge/rapier3d" :as rapier]
-            ["miniplex" :as miniplex]))
+            ["miniplex" :as miniplex]
+            ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]))
+
+(def app-container
+  (.querySelector js/document "#app"))
+
+(def canvas
+  (.querySelector js/document "#canvas"))
 
 (def world
   (let [gravity {:x 0 :y -9.81 :z 0}]
@@ -9,6 +16,16 @@
 
 (def scene
   (three/Scene.))
+
+(def camera
+  (three/PerspectiveCamera. 75 (/ (.-innerWidth js/window) (.-innerHeight js/window)) 0.1 1000))
+(set! (.-z (.-position camera)) 10)
+(set! (.-y (.-position camera)) 10)
+(.lookAt camera 0 0 0)
+
+(def control
+  (TransformControls. camera canvas))
+(.add scene (.getHelper control))
 
 (def mplexworld
   (miniplex/World.))
@@ -24,10 +41,17 @@
 
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh {body :body} :physics} physics-query]
-    (let [t (.translation body)
-          r (.rotation body)]
-      (.set (.-position mesh) (:x t) (:y t) (:z t))
-      (.set (.-quaternion mesh) (:x r) (:y r) (:z r) (:w r)))))
+    ;; when the object is under control, we don't want the physics to override our changes to the mesh
+    ;; so we do the reverse: sync the physics body to the mesh
+    (if (= (.-object control) mesh)
+      (let [t (.-position mesh)
+            r (.-quaternion mesh)]
+        (.setTranslation body t)
+        (.setRotation body r))
+      (let [t (.translation body)
+            r (.rotation body)]
+        (.set (.-position mesh) (:x t) (:y t) (:z t))
+        (.set (.-quaternion mesh) (:x r) (:y r) (:z r) (:w r))))))
 
 (defn assemble-physics-cube []
   (let* [geometry (three/BoxGeometry. 1 1 1)
@@ -44,9 +68,6 @@
          :physics {:body rigid-body :collider collider}}))
 
 (set! (.-background scene) (three/Color. 0xbfd1e5))
-
-(def camera
-  (three/PerspectiveCamera. 75 (/ (.-innerWidth js/window) (.-innerHeight js/window)) 0.1 1000))
 
 (def ambient
   (three/HemisphereLight. 0x555555 0xffffff))
@@ -84,23 +105,14 @@
 (set! (.-receiveShadow ground) true)
 (.add scene ground)
 
-(def app-container
-  (.querySelector js/document "#app"))
-
-(def canvas
-  (.querySelector js/document "#canvas"))
-
 (def renderer
   (three/WebGLRenderer. {:canvas canvas}))
 
 (set! (.. renderer -shadowMap -enabled) true)
 
-(set! (.-z (.-position camera)) 10)
-(set! (.-y (.-position camera)) 10)
-(.lookAt camera 0 0 0)
-
 (let [cube (assemble-physics-cube)]
-  (.add mplexworld cube))
+  (.add mplexworld cube)
+  (.attach control (:mesh cube)))
 
 (defn animate []
   (let [width (.-clientWidth app-container)
