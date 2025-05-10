@@ -10,9 +10,11 @@
   },
   "devDependencies": {
     "squint-cljs": "^0.8.146",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-plugin-wasm": "^3.4.1"
   },
   "dependencies": {
+    "@dimforge/rapier3d": "^0.16.2",
     "three": "^0.176.0"
   }
 }
