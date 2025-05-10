@@ -1,13 +1,47 @@
 (ns main
   (:require ["three" :as three]
-            ["@dimforge/rapier3d" :as rapier]))
+            ["@dimforge/rapier3d" :as rapier]
+            ["miniplex" :as miniplex]))
 
 (def world
-  (let [gravity { :x 0 :y -9.81 :z 0 }]
+  (let [gravity {:x 0 :y -9.81 :z 0}]
     (rapier/World. gravity)))
 
 (def scene
   (three/Scene.))
+
+(def mplexworld
+  (miniplex/World.))
+
+(def physics-query (.with mplexworld "mesh" "physics"))
+
+(.subscribe (.-onEntityAdded physics-query) (fn [e]
+                                              (.add scene (:mesh e))))
+(.subscribe (.-onEntityRemoved physics-query) (fn [e]
+                                                (.remove scene (:mesh e))
+                                                (.removeRigidBody (:body (:physics e)))
+                                                (.removeCollider (:collider (:physics e)))))
+
+(defn sync-mesh-to-physics []
+  (doseq [{mesh :mesh {body :body} :physics} physics-query]
+    (let [t (.translation body)
+          r (.rotation body)]
+      (.set (.-position mesh) (:x t) (:y t) (:z t))
+      (.set (.-quaternion mesh) (:x r) (:y r) (:z r) (:w r)))))
+
+(defn assemble-physics-cube []
+  (let* [geometry (three/BoxGeometry. 1 1 1)
+         material (three/MeshStandardMaterial. {:color 0x00ff00})
+         mesh (three/Mesh. geometry material)
+         rigid-body-desc (-> (.dynamic rapier/RigidBodyDesc)
+                             (.setTranslation 0 8 0)
+                             (.setRotation {:x 0.4254518 :y -0.237339 :z 0.4254518 :w 0.762661}))
+         rigid-body (.createRigidBody world rigid-body-desc)
+         collider-desc (.cuboid rapier/ColliderDesc 1 1 1)
+         collider (.createCollider world collider-desc rigid-body)]
+        (set! (.-castShadow mesh) true)
+        {:mesh mesh
+         :physics {:body rigid-body :collider collider}}))
 
 (set! (.-background scene) (three/Color. 0xbfd1e5))
 
@@ -22,7 +56,7 @@
 (def light
   (three/DirectionalLight. 0xffffff 4))
 
-(.set (.-position light) 0 10 0)
+(.set (.-position light) -5 10 0)
 (set! (.-castShadow light) true)
 (set! (.. light -shadow -radius) 3)
 (set! (.. light -shadow -blurSamples) 8)
@@ -61,30 +95,12 @@
 
 (set! (.. renderer -shadowMap -enabled) true)
 
-(def geometry
-  (three/BoxGeometry. 1 1 1))
-
-(def material
-  (three/MeshStandardMaterial. { :color 0x00ff00 }))
-
-(def cube
-  (three/Mesh. geometry material))
-(def cube-body
-  (let [cube-body-desc (-> (.dynamic rapier/RigidBodyDesc)
-                           (.setTranslation 0 8 0)
-                           (.setRotation {:x 0.4254518 :y -0.237339 :z 0.4254518 :w 0.762661}))]
-    (.createRigidBody world cube-body-desc)))
-
-(let [collider-desc (.cuboid rapier/ColliderDesc 1 1 1)]
-  (.createCollider world collider-desc cube-body))
-
-(set! (.-castShadow cube) true)
-;; (.set (.-position cube) 0 3 0)
-(.add scene cube)
-
 (set! (.-z (.-position camera)) 10)
 (set! (.-y (.-position camera)) 10)
 (.lookAt camera 0 0 0)
+
+(let [cube (assemble-physics-cube)]
+  (.add mplexworld cube))
 
 (defn animate []
   (let [width (.-clientWidth app-container)
@@ -95,9 +111,6 @@
       (set! (.-aspect camera) (/ width height))
       (.updateProjectionMatrix camera)))
   (.step world)
-  (let [t (.translation cube-body)
-        r (.rotation cube-body)]
-    (.set (.-position cube) (:x t) (:y t) (:z t))
-    (.set (.-quaternion cube) (:x r) (:y r) (:z r) (:w r)))
+  (sync-mesh-to-physics)
   (.render renderer scene camera))
 (.setAnimationLoop renderer animate)
