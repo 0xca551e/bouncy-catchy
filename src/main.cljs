@@ -1,8 +1,10 @@
 (ns main
-  (:require ["three" :as three]
-            ["@dimforge/rapier3d" :as rapier]
-            ["miniplex" :as miniplex]
-            ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]))
+  (:require
+   ["@dimforge/rapier3d" :as rapier]
+   ["miniplex" :as miniplex]
+   ["three" :as three]
+   ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]
+   [input]))
 
 (def app-container
   (.querySelector js/document "#app"))
@@ -26,27 +28,6 @@
 (def control
   (TransformControls. camera canvas))
 (.add scene (.getHelper control))
-
-(def raycaster (three/Raycaster.))
-
-(def pointer-down false)
-(def prev-pointer-down false)
-(def pointer (three/Vector2.))
-
-(.addEventListener (.-body js/document) "mousemove" (fn [e]
-                                                      (set! (.-x pointer) (-> (.-clientX e)
-                                                                              (/ (.-innerWidth js/window))
-                                                                              (* 2)
-                                                                              (- 1)))
-                                                      (set! (.-y pointer) (-> (.-clientY e)
-                                                                              (/ (.-innerHeight js/window))
-                                                                              (* 2)
-                                                                              (+ 1)
-                                                                              (-)))))
-(.addEventListener (.-body js/document) "mousedown" (fn [e]
-                                                      (set! pointer-down true)))
-(.addEventListener (.-body js/document) "mouseup" (fn [e]
-                                                      (set! pointer-down false)))
 
 (def mplexworld
   (miniplex/World.))
@@ -135,6 +116,8 @@
 (let [cube (assemble-physics-cube)]
   (.add mplexworld cube))
 
+(input/init)
+
 (defn animate []
   (let [width (.-clientWidth app-container)
         height (.-clientHeight app-container)]
@@ -146,15 +129,15 @@
   (.step world)
   (sync-mesh-to-physics)
 
-  (.setFromCamera raycaster pointer camera)
-  (when (and pointer-down (not prev-pointer-down))
-    (let* [intersects (.intersectObjects raycaster (.-children scene) false)
+  (.setFromCamera input/raycaster input/pointer camera)
+  (when (input/just-mouse-up-nodrag 0)
+    (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
            first-hit (nth intersects 0)]
-          (if first-hit
-            (.attach control (.-object first-hit))
-            nil)))
+      (if first-hit
+        (.attach control (.-object first-hit))
+        nil)))
 
   (.render renderer scene camera)
 
-  (set! prev-pointer-down pointer-down))
+  (input/post-update))
 (.setAnimationLoop renderer animate)
