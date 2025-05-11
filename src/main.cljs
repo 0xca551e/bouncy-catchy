@@ -71,7 +71,7 @@
 (def mesh-query (.with ecs "mesh"))
 (.subscribe (.-onEntityAdded mesh-query) (fn [e]
                                            (.add scene (:mesh e))
-                                           (set! (.-userData (:mesh e)) { :entity e })))
+                                           (set! (.-userData (:mesh e)) {:entity e})))
 (.subscribe (.-onEntityRemoved mesh-query) (fn [e]
                                              (.remove scene (:mesh e))))
 (def physics-query (.with ecs "physics"))
@@ -101,10 +101,15 @@
   (when (input/just-mouse-up-nodrag 0)
     (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
            first-hit (nth intersects 0)
-           is-first-hit-controllable (and first-hit (.. first-hit -object -userData -entity -controllable))]
-      (if is-first-hit-controllable
-        (.attach control (.-object first-hit))
-        (.detach control)))))
+           controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
+          (if (and first-hit controllable)
+            (do
+              (.setMode control (.-current controllable))
+              (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
+              (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
+              (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z)))
+              (.attach control (.-object first-hit)))
+            (.detach control)))))
 
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh body :physics} mesh-physics-query]
@@ -177,7 +182,9 @@
         (set! (.-receiveShadow mesh) true)
         {:mesh mesh
          :physics collider
-         :controllable {}}))
+         :controllable {:current "translate"
+                        :translate {:z true}
+                        :rotate {:z true}}}))
 
 ;; main
 (defn start []
