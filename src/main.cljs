@@ -103,13 +103,20 @@
            first-hit (nth intersects 0)
            controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
           (if (and first-hit controllable)
-            (do
-              (.setMode control (.-current controllable))
-              (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
-              (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
-              (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z)))
-              (.attach control (.-object first-hit)))
-            (.detach control)))))
+            (.attach control (.-object first-hit))
+            (.detach control))))
+  (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
+    (when controllable
+      (cond
+        (and (:translate controllable) (input/just-key-pressed "g"))
+        (set! (.-current controllable) "translate")
+
+        (and (:rotate controllable) (input/just-key-pressed "r"))
+        (set! (.-current controllable) "rotate"))
+      (.setMode control (.-current controllable))
+      (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
+      (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
+      (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z))))))
 
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh body :physics} mesh-physics-query]
@@ -134,14 +141,6 @@
 
 (defn render []
   (.render renderer scene camera))
-
-(defn animation-frame []
-  (resize-renderer-to-display-size)
-  (step-physics)
-  (sync-mesh-to-physics)
-  (handle-object-selection)
-  (render)
-  (input/post-update))
 
 ;; assemblages
 (def ball-radius 0.5)
@@ -169,7 +168,7 @@
          geometry (three/BoxGeometry. (:x dimensions)
                                       (:y dimensions)
                                       (:z dimensions))
-         material (three/MeshStandardMaterial. {:color 0xffff00})
+         material (three/MeshStandardMaterial. {:color 0xffffff})
          mesh (three/Mesh. geometry material)
          collider-desc (-> (.cuboid rapier/ColliderDesc
                                     (:x half-dimensions)
@@ -183,10 +182,18 @@
         {:mesh mesh
          :physics collider
          :controllable {:current "translate"
-                        :translate {:z true}
+                        :translate {:x true}
                         :rotate {:z true}}}))
 
 ;; main
+(defn animation-frame []
+  (resize-renderer-to-display-size)
+  (step-physics)
+  (sync-mesh-to-physics)
+  (handle-object-selection)
+  (render)
+  (input/post-update))
+
 (defn start []
   (input/init)
 
