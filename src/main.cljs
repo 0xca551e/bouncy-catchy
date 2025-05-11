@@ -70,7 +70,8 @@
 ;; queries
 (def mesh-query (.with ecs "mesh"))
 (.subscribe (.-onEntityAdded mesh-query) (fn [e]
-                                           (.add scene (:mesh e))))
+                                           (.add scene (:mesh e))
+                                           (set! (.-userData (:mesh e)) { :entity e })))
 (.subscribe (.-onEntityRemoved mesh-query) (fn [e]
                                              (.remove scene (:mesh e))))
 (def physics-query (.with ecs "physics"))
@@ -99,10 +100,11 @@
   (.setFromCamera input/raycaster input/pointer camera)
   (when (input/just-mouse-up-nodrag 0)
     (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
-           first-hit (nth intersects 0)]
-          (if first-hit
-            (.attach control (.-object first-hit))
-            nil))))
+           first-hit (nth intersects 0)
+           is-first-hit-controllable (and first-hit (.. first-hit -object -userData -entity -controllable))]
+      (if is-first-hit-controllable
+        (.attach control (.-object first-hit))
+        nil))))
 
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh body :physics} mesh-physics-query]
@@ -174,7 +176,8 @@
          collider (.createCollider physics-engine collider-desc)]
         (set! (.-receiveShadow mesh) true)
         {:mesh mesh
-         :physics collider}))
+         :physics collider
+         :controllable {}}))
 
 ;; main
 (defn start []
