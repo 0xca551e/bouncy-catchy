@@ -106,7 +106,7 @@
             (.attach control (.-object first-hit))
             (.detach control))))
   (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
-    (when controllable
+    (when (and controllable (not (.-dragging control)))
       (cond
         (and (:translate controllable) (input/just-key-pressed "g"))
         (set! (.-current controllable) "translate")
