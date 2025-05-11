@@ -68,13 +68,17 @@
   (.add scene sunlight))
 
 ;; queries
-(def physics-query (.with ecs "mesh" "physics"))
-(.subscribe (.-onEntityAdded physics-query) (fn [e]
-                                              (.add scene (:mesh e))))
+(def mesh-query (.with ecs "mesh"))
+(.subscribe (.-onEntityAdded mesh-query) (fn [e]
+                                           (.add scene (:mesh e))))
+(.subscribe (.-onEntityRemoved mesh-query) (fn [e]
+                                             (.remove scene (:mesh e))))
+(def physics-query (.with ecs "physics"))
 (.subscribe (.-onEntityRemoved physics-query) (fn [e]
-                                                (.remove scene (:mesh e))
-                                                (.removeRigidBody (:body (:physics e)))
-                                                (.removeCollider (:collider (:physics e)))))
+                                                (if (.-collider (:physics e))
+                                                  (.removeRigidBody physics-engine (:physics e))
+                                                  (.removeCollider physics-engine (:physics e)))))
+(def mesh-physics-query (.with ecs "mesh" "physics"))
 
 (def controllable-mesh-query (.with ecs "mesh" "controllable"))
 
@@ -101,7 +105,7 @@
             nil))))
 
 (defn sync-mesh-to-physics []
-  (doseq [{mesh :mesh {body :body} :physics} physics-query]
+  (doseq [{mesh :mesh body :physics} mesh-physics-query]
     ;; when the object is under control, we don't want the physics to override our changes to the mesh
     ;; so we do the reverse: sync the physics body to the mesh
     (if (= (.-object control) mesh)
@@ -134,9 +138,8 @@
 
 ;; assemblages
 (def ball-radius 0.5)
-(defn ^:export assemble-physics-ball [position velocity]
-  (let* [;geometry (three/BoxGeometry. 1 1 1)
-         geometry (three/SphereGeometry. ball-radius 16 8)
+(defn assemble-physics-ball [position velocity]
+  (let* [geometry (three/SphereGeometry. ball-radius 16 8)
          material (three/MeshStandardMaterial. {:color 0x00ff00})
          mesh (three/Mesh. geometry material)
          rigid-body-desc (-> (.dynamic rapier/RigidBodyDesc)
@@ -147,12 +150,31 @@
                                          (:y velocity)
                                          (:z velocity)))
          rigid-body (.createRigidBody physics-engine rigid-body-desc)
-         ;; collider-desc (.cuboid rapier/ColliderDesc 1 1 1)
          collider-desc (.ball rapier/ColliderDesc ball-radius)
-         collider (.createCollider physics-engine collider-desc rigid-body)]
+         _collider (.createCollider physics-engine collider-desc rigid-body)]
         (set! (.-castShadow mesh) true)
         {:mesh mesh
-         :physics {:body rigid-body :collider collider}}))
+         :physics rigid-body}))
+
+(defn assemble-moveable-wall [dimensions position]
+  (let* [half-dimensions (-> (.clone dimensions)
+                             (.divideScalar 2))
+         geometry (three/BoxGeometry. (:x dimensions)
+                                      (:y dimensions)
+                                      (:z dimensions))
+         material (three/MeshStandardMaterial. {:color 0xffff00})
+         mesh (three/Mesh. geometry material)
+         collider-desc (-> (.cuboid rapier/ColliderDesc
+                                    (:x half-dimensions)
+                                    (:y half-dimensions)
+                                    (:z half-dimensions))
+                           (.setTranslation (:x position)
+                                            (:y position)
+                                            (:z position)))
+         collider (.createCollider physics-engine collider-desc)]
+        (set! (.-receiveShadow mesh) true)
+        {:mesh mesh
+         :physics collider}))
 
 ;; main
 (defn start []
@@ -161,16 +183,8 @@
   (let [cube (assemble-physics-ball (three/Vector3. 0 10 0) (three/Vector3.))]
     (.add ecs cube))
 
-   ;; - set up three ground
-   ;; TODO: make assemblage
-  (let* [geometry (three/BoxGeometry. 10 1 10)
-         material (three/MeshStandardMaterial. {:color 0xffffff})
-         ground (three/Mesh. geometry material)]
-    (set! (.. ground -position -y) 1)
-    (set! (.-receiveShadow ground) true)
-    (.add scene ground))
-  (let [ground-body (rapier/ColliderDesc.cuboid 10 1 10)]
-    (.createCollider physics-engine ground-body))
+  (let [ground (assemble-moveable-wall (three/Vector3. 10 1 10) (three/Vector3.))]
+    (.add ecs ground))
 
   (.setAnimationLoop renderer animation-frame))
 
