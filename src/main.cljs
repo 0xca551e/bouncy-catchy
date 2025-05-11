@@ -104,7 +104,7 @@
            is-first-hit-controllable (and first-hit (.. first-hit -object -userData -entity -controllable))]
       (if is-first-hit-controllable
         (.attach control (.-object first-hit))
-        nil))))
+        (.detach control)))))
 
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh body :physics} mesh-physics-query]
