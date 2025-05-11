@@ -27,10 +27,32 @@
   (TransformControls. camera canvas))
 (.add scene (.getHelper control))
 
+(def raycaster (three/Raycaster.))
+
+(def pointer-down false)
+(def prev-pointer-down false)
+(def pointer (three/Vector2.))
+
+(.addEventListener (.-body js/document) "mousemove" (fn [e]
+                                                      (set! (.-x pointer) (-> (.-clientX e)
+                                                                              (/ (.-innerWidth js/window))
+                                                                              (* 2)
+                                                                              (- 1)))
+                                                      (set! (.-y pointer) (-> (.-clientY e)
+                                                                              (/ (.-innerHeight js/window))
+                                                                              (* 2)
+                                                                              (+ 1)
+                                                                              (-)))))
+(.addEventListener (.-body js/document) "mousedown" (fn [e]
+                                                      (set! pointer-down true)))
+(.addEventListener (.-body js/document) "mouseup" (fn [e]
+                                                      (set! pointer-down false)))
+
 (def mplexworld
   (miniplex/World.))
 
 (def physics-query (.with mplexworld "mesh" "physics"))
+(def controllable-mesh-query (.with mplexworld "mesh" "controllable"))
 
 (.subscribe (.-onEntityAdded physics-query) (fn [e]
                                               (.add scene (:mesh e))))
@@ -111,8 +133,7 @@
 (set! (.. renderer -shadowMap -enabled) true)
 
 (let [cube (assemble-physics-cube)]
-  (.add mplexworld cube)
-  (.attach control (:mesh cube)))
+  (.add mplexworld cube))
 
 (defn animate []
   (let [width (.-clientWidth app-container)
@@ -124,5 +145,16 @@
       (.updateProjectionMatrix camera)))
   (.step world)
   (sync-mesh-to-physics)
-  (.render renderer scene camera))
+
+  (.setFromCamera raycaster pointer camera)
+  (when (and pointer-down (not prev-pointer-down))
+    (let* [intersects (.intersectObjects raycaster (.-children scene) false)
+           first-hit (nth intersects 0)]
+          (if first-hit
+            (.attach control (.-object first-hit))
+            nil)))
+
+  (.render renderer scene camera)
+
+  (set! prev-pointer-down pointer-down))
 (.setAnimationLoop renderer animate)
