@@ -156,7 +156,9 @@
                                          (:y velocity)
                                          (:z velocity)))
          rigid-body (.createRigidBody physics-engine rigid-body-desc)
-         collider-desc (.ball rapier/ColliderDesc ball-radius)
+         collider-desc (-> (.ball rapier/ColliderDesc ball-radius)
+                           (.setRestitution 0.8)
+                           (.setRestitutionCombineRule rapier/CoefficientCombineRule.Max))
          _collider (.createCollider physics-engine collider-desc rigid-body)]
         (set! (.-castShadow mesh) true)
         {:mesh mesh
@@ -197,7 +199,7 @@
 (defn start []
   (input/init)
 
-  (let [cube (assemble-physics-ball (three/Vector3. 0 10 0) (three/Vector3.))]
+  (let [cube (assemble-physics-ball (three/Vector3. 0 10 0) (three/Vector3. 0 -10 0))]
     (.add ecs cube))
 
   (let [ground (assemble-moveable-wall (three/Vector3. 10 1 10) (three/Vector3.))]
