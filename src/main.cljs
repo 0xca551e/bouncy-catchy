@@ -171,7 +171,7 @@
     (if (= (.-object control) mesh)
       (let [t (.-position mesh)
             r (.-quaternion mesh)]
-        (.setTranslation body t)
+        (.setTranslation body (.divideScalar (.clone t) physics-scaling-factor))
         (.setRotation body r))
       (let [t (.translation body)
             r (.rotation body)]
