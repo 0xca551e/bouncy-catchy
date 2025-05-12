@@ -6,6 +6,25 @@
    ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]
    [input]))
 
+;; web audio
+(def audio-context nil)
+(def response nil)
+(def array-buffer nil)
+(def audio-buffer nil)
+
+(defn playsound []
+  (let [source (.createBufferSource audio-context)]
+    (set! (.-buffer source) audio-buffer)
+    (.connect source (.-destination audio-context))
+    (.start source)))
+
+(defn ^:async init-audio []
+  (set! audio-context (js/AudioContext.))
+  (set! response
+        (js-await (js/fetch "/696317__mandaki__burmese-xylophone-sample.mp3")))
+  (set! array-buffer (js-await (.arrayBuffer response)))
+  (set! audio-buffer (js-await (.decodeAudioData audio-context array-buffer))))
+
 ;; dom objects
 (def app-container
   (.querySelector js/document "#app"))
@@ -20,6 +39,8 @@
 (def physics-engine
   (let [gravity {:x 0 :y -9.81 :z 0}]
     (rapier/World. gravity)))
+
+(def physics-event-queue (rapier/EventQueue. true))
 
 ;; - setting up threejs world
 (def renderer
@@ -75,6 +96,8 @@
 (.subscribe (.-onEntityRemoved mesh-query) (fn [e]
                                              (.remove scene (:mesh e))))
 (def physics-query (.with ecs "physics"))
+(.subscribe (.-onEntityAdded physics-query) (fn [e]
+                                              (set! (.-userData (:physics e)) {:entity e})))
 (.subscribe (.-onEntityRemoved physics-query) (fn [e]
                                                 (if (.-collider (:physics e))
                                                   (.removeRigidBody physics-engine (:physics e))
@@ -82,6 +105,12 @@
 (def mesh-physics-query (.with ecs "mesh" "physics"))
 
 (def controllable-mesh-query (.with ecs "mesh" "controllable"))
+(def instrument-query (.with ecs "physics" "instrument"))
+(.subscribe (.-onEntityAdded instrument-query) (fn [e]
+                                                 (.setActiveEvents (:physics e) rapier/ActiveEvents.COLLISION_EVENTS)))
+(.subscribe (.-onEntityRemoved instrument-query) (fn [e]
+                                                   (.setActiveEvents (:physics e) rapier/ActiveEvents.NONE)))
+
 
 ;; systems
 (defn resize-renderer-to-display-size []
@@ -94,7 +123,17 @@
       (.updateProjectionMatrix camera))))
 
 (defn step-physics []
-  (.step physics-engine))
+  (.step physics-engine physics-event-queue)
+  (.drainCollisionEvents physics-event-queue (fn [handle1 handle2 started]
+                                               (when started
+                                                 (let [bodies (.-colliders physics-engine)
+                                                       a (.get bodies handle1)
+                                                       b (.get bodies handle2)
+                                                       a-instrument (some-> a .-userData .-entity .-instrument)
+                                                       b-instrument (some-> b .-userData .-entity .-instrument)]
+                                                   (println a-instrument b-instrument)
+                                                   (when a-instrument (playsound))
+                                                   (when b-instrument (playsound)))))))
 
 (defn handle-object-selection []
   (.setFromCamera input/raycaster input/pointer camera)
@@ -102,9 +141,9 @@
     (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
            first-hit (nth intersects 0)
            controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
-          (if (and first-hit controllable)
-            (.attach control (.-object first-hit))
-            (.detach control))))
+      (if (and first-hit controllable)
+        (.attach control (.-object first-hit))
+        (.detach control))))
   (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
     (when (and controllable (not (.-dragging control)))
       (cond
@@ -118,6 +157,7 @@
       (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
       (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z))))))
 
+(def physics-scaling-factor 1)
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh body :physics} mesh-physics-query]
     ;; when the object is under control, we don't want the physics to override our changes to the mesh
@@ -185,7 +225,8 @@
          :physics collider
          :controllable {:current "translate"
                         :translate {:x true}
-                        :rotate {:z true}}}))
+                        :rotate {:z true}}
+         :instrument true}))
 
 ;; main
 (defn animation-frame []
@@ -196,7 +237,8 @@
   (render)
   (input/post-update))
 
-(defn start []
+(defn ^:async start []
+  (js-await (init-audio))
   (input/init)
 
   (let [cube (assemble-physics-ball (three/Vector3. 0 10 0) (three/Vector3. 0 -10 0))]
@@ -207,4 +249,9 @@
 
   (.setAnimationLoop renderer animation-frame))
 
-(start)
+(.addEventListener
+ js/document
+ "click"
+ (fn []
+   (start))
+ {:once true})
