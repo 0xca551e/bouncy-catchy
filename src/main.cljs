@@ -6,6 +6,25 @@
    ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]
    [input]))
 
+(defn lerp [t a b] (+ a (* (- b a) t)))
+(defn inverseLerp [v a b] (/ (- v a) (- b a)))
+(defn remap
+  [v inMin inMax outMin outMax]
+  (lerp (inverseLerp v inMin inMax) outMin outMax))
+
+(def timing-padding-px 100)
+
+(defn timing-y []
+  (- (.-innerHeight js/window)
+     100))
+(defn timing-to-x [timing duration]
+  (let [width (.-innerWidth js/window)
+        min-x timing-padding-px
+        max-x (- width timing-padding-px)]
+    (remap timing 0 duration min-x max-x)))
+
+(def duration-milliseconds 3000)
+
 ;; web audio
 (def audio-context nil)
 (def response nil)
@@ -114,13 +133,17 @@
                                                          physics-scaling-factor
                                                          physics-scaling-factor)))
 
-(def controllable-mesh-query (.with ecs "mesh" "controllable"))
+(def svg-query (.with ecs "svg"))
+(.subscribe (.-onEntityAdded svg-query) (fn [e]
+                                          (.appendChild hud (:svg e))))
+(.subscribe (.-onEntityRemoved svg-query) (fn [e]
+                                            (.remove (:svg e))))
+
 (def instrument-query (.with ecs "physics" "instrument"))
 (.subscribe (.-onEntityAdded instrument-query) (fn [e]
                                                  (.setActiveEvents (:physics e) rapier/ActiveEvents.COLLISION_EVENTS)))
 (.subscribe (.-onEntityRemoved instrument-query) (fn [e]
                                                    (.setActiveEvents (:physics e) rapier/ActiveEvents.NONE)))
-
 
 ;; systems
 (defn resize-renderer-to-display-size []
@@ -151,9 +174,9 @@
     (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
            first-hit (nth intersects 0)
            controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
-      (if (and first-hit controllable)
-        (.attach control (.-object first-hit))
-        (.detach control))))
+          (if (and first-hit controllable)
+            (.attach control (.-object first-hit))
+            (.detach control))))
   (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
     (when (and controllable (not (.-dragging control)))
       (cond
@@ -232,59 +255,53 @@
                            (.setTranslation (:x position)
                                             (:y position)
                                             (:z position)))
-         collider (.createCollider physics-engine collider-desc)]
+         collider (.createCollider physics-engine collider-desc)
+
+         target-time 1000
+         duration 3000
+         hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
+        (.setAttribute hud-element "cx" (timing-to-x target-time duration))
+        (.setAttribute hud-element "cy" (timing-y))
+        (.setAttribute hud-element "r" 10)
         (set! (.-receiveShadow mesh) true)
         {:mesh mesh
          :physics collider
          :controllable {:current "translate"
                         :translate {:x true}
                         :rotate {:z true}}
-         :instrument true}))
+         :instrument true
+         :timed-requirement {:duration duration
+                             :target-time target-time}
+         :svg hud-element}))
+
+(defn assemble-timerbar []
+  (let [timing-bar-hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
+    (.setAttribute timing-bar-hud-element "r" 5)
+    (.setAttribute timing-bar-hud-element "cy" (timing-y))
+    {:svg timing-bar-hud-element
+     :timerbar {:position 0
+                :duration 3000}}))
+
+(defn update-timerbar-entity [e delta]
+  (let [svg (.-svg e)
+        timerbar (.-timerbar e)
+        position (.-position timerbar)
+        duration (.-duration timerbar)]
+    (set! (aget timerbar :position) (+ position delta))
+    (when (> position duration)
+      (set! (.-position timerbar) 0)
+                                        ; spawn marbles, despawn hit markers from last attempt, etc.
+      )
+    (.setAttribute svg "cx" (timing-to-x position duration))))
 
 ;; main
-(defn lerp [t a b] (+ a (* (- b a) t)))
-(defn inverseLerp [v a b] (/ (- v a) (- b a)))
-(defn remap
-  [v inMin inMax outMin outMax]
-  (lerp (inverseLerp v inMin inMax) outMin outMax))
-
-(def time-position 0)
-(def duration-milliseconds 3000)
-(def timing 1000)
-(def timing-padding-px 100)
-
-(defn timing-y []
-  (- (.-innerHeight js/window)
-     100))
-(defn timing-to-x [timing duration]
-  (let [width (.-innerWidth js/window)
-        min-x timing-padding-px
-        max-x (- width timing-padding-px)]
-    (remap timing 0 duration min-x max-x)))
-
-(def hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle"))
-(.setAttribute hud-element "cx" (timing-to-x timing duration-milliseconds))
-(.setAttribute hud-element "cy" (timing-y))
-(.setAttribute hud-element "r" 10)
-(.appendChild hud hud-element)
-
-(def timing-bar-hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle"))
-(.setAttribute timing-bar-hud-element "cy" (timing-y))
-(.setAttribute timing-bar-hud-element "r" 5)
-(.appendChild hud timing-bar-hud-element)
-
+(def timerbar nil)
 (def last-time 0)
 (defn animation-frame [time]
   (let [delta (- time last-time)]
-    (set! time-position (+ time-position delta))
-    (when (> time-position duration-milliseconds)
-      (set! time-position 0)
-                                        ; spawn marbles, despawn hit markers from last attempt, etc.
-      )
-    (.setAttribute timing-bar-hud-element "cx" (timing-to-x time-position duration-milliseconds))
-
     (resize-renderer-to-display-size)
     (step-physics)
+    (update-timerbar-entity timerbar delta)
     (sync-mesh-to-physics)
     (handle-object-selection)
     (render)
@@ -300,6 +317,9 @@
 
   (let [ground (assemble-moveable-wall (three/Vector3. 100 3 100) (three/Vector3.))]
     (.add ecs ground))
+
+  (set! timerbar (assemble-timerbar))
+  (.add ecs timerbar)
 
   (.setAnimationLoop renderer animation-frame))
 
