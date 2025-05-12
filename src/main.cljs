@@ -32,6 +32,9 @@
 (def canvas
   (.querySelector js/document "#canvas"))
 
+(def hud
+  (.querySelector js/document "#hud"))
+
 ;; game world
 (def ecs
   (miniplex/World.))
@@ -66,7 +69,7 @@
     c))
 
 (def control
-  (let [c (TransformControls. camera main/canvas)]
+  (let [c (TransformControls. camera js/document.body)]
     (.add scene (.getHelper c))
     c))
 
@@ -239,13 +242,54 @@
          :instrument true}))
 
 ;; main
-(defn animation-frame []
-  (resize-renderer-to-display-size)
-  (step-physics)
-  (sync-mesh-to-physics)
-  (handle-object-selection)
-  (render)
-  (input/post-update))
+(defn lerp [t a b] (+ a (* (- b a) t)))
+(defn inverseLerp [v a b] (/ (- v a) (- b a)))
+(defn remap
+  [v inMin inMax outMin outMax]
+  (lerp (inverseLerp v inMin inMax) outMin outMax))
+
+(def time-position 0)
+(def duration-milliseconds 3000)
+(def timing 1000)
+(def timing-padding-px 100)
+
+(defn timing-y []
+  (- (.-innerHeight js/window)
+     100))
+(defn timing-to-x [timing duration]
+  (let [width (.-innerWidth js/window)
+        min-x timing-padding-px
+        max-x (- width timing-padding-px)]
+    (remap timing 0 duration min-x max-x)))
+
+(def hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle"))
+(.setAttribute hud-element "cx" (timing-to-x timing duration-milliseconds))
+(.setAttribute hud-element "cy" (timing-y))
+(.setAttribute hud-element "r" 10)
+(.appendChild hud hud-element)
+
+(def timing-bar-hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle"))
+(.setAttribute timing-bar-hud-element "cy" (timing-y))
+(.setAttribute timing-bar-hud-element "r" 5)
+(.appendChild hud timing-bar-hud-element)
+
+(def last-time 0)
+(defn animation-frame [time]
+  (let [delta (- time last-time)]
+    (set! time-position (+ time-position delta))
+    (when (> time-position duration-milliseconds)
+      (set! time-position 0)
+                                        ; spawn marbles, despawn hit markers from last attempt, etc.
+      )
+    (.setAttribute timing-bar-hud-element "cx" (timing-to-x time-position duration-milliseconds))
+
+    (resize-renderer-to-display-size)
+    (step-physics)
+    (sync-mesh-to-physics)
+    (handle-object-selection)
+    (render)
+    (input/post-update))
+  (set! last-time time))
 
 (defn ^:async start []
   (js-await (init-audio))
@@ -254,7 +298,7 @@
   (let [cube (assemble-physics-ball (three/Vector3. 0 100 0) (three/Vector3. 0 0 0))]
     (.add ecs cube))
 
-  (let [ground (assemble-moveable-wall (three/Vector3. 100 1 100) (three/Vector3.))]
+  (let [ground (assemble-moveable-wall (three/Vector3. 100 3 100) (three/Vector3.))]
     (.add ecs ground))
 
   (.setAnimationLoop renderer animation-frame))
