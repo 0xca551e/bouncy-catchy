@@ -60,8 +60,8 @@
               (.-innerHeight js/window))
            0.1
            1000)]
-    (set! (.-z (.-position c)) 10)
-    (set! (.-y (.-position c)) 10)
+    (set! (.-z (.-position c)) 100)
+    (set! (.-y (.-position c)) 100)
     (.lookAt c 0 0 0)
     c))
 
@@ -103,6 +103,13 @@
                                                   (.removeRigidBody physics-engine (:physics e))
                                                   (.removeCollider physics-engine (:physics e)))))
 (def mesh-physics-query (.with ecs "mesh" "physics"))
+;; treat 1 meter in threejs as 1 centimeter in rapier
+(def physics-scaling-factor 100)
+(.subscribe (.-onEntityAdded mesh-physics-query) (fn [e]
+                                                   (.set (.-scale (:mesh e))
+                                                         physics-scaling-factor
+                                                         physics-scaling-factor
+                                                         physics-scaling-factor)))
 
 (def controllable-mesh-query (.with ecs "mesh" "controllable"))
 (def instrument-query (.with ecs "physics" "instrument"))
@@ -157,7 +164,6 @@
       (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
       (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z))))))
 
-(def physics-scaling-factor 1)
 (defn sync-mesh-to-physics []
   (doseq [{mesh :mesh body :physics} mesh-physics-query]
     ;; when the object is under control, we don't want the physics to override our changes to the mesh
@@ -170,9 +176,9 @@
       (let [t (.translation body)
             r (.rotation body)]
         (.set (.-position mesh)
-              (:x t)
-              (:y t)
-              (:z t))
+              (* physics-scaling-factor (:x t))
+              (* physics-scaling-factor (:y t))
+              (* physics-scaling-factor (:z t)))
         (.set (.-quaternion mesh)
               (:x r)
               (:y r)
@@ -183,9 +189,10 @@
   (.render renderer scene camera))
 
 ;; assemblages
-(def ball-radius 0.5)
+(def ball-radius 0.01)
 (defn assemble-physics-ball [position velocity]
-  (let* [geometry (three/SphereGeometry. ball-radius 16 8)
+  (let* [position (.divideScalar (.clone position) physics-scaling-factor)
+         geometry (three/SphereGeometry. ball-radius 16 8)
          material (three/MeshStandardMaterial. {:color 0x00ff00})
          mesh (three/Mesh. geometry material)
          rigid-body-desc (-> (.dynamic rapier/RigidBodyDesc)
@@ -194,7 +201,8 @@
                                               (:z position))
                              (.setLinvel (:x velocity)
                                          (:y velocity)
-                                         (:z velocity)))
+                                         (:z velocity))
+                             (.setCcdEnabled true))
          rigid-body (.createRigidBody physics-engine rigid-body-desc)
          collider-desc (-> (.ball rapier/ColliderDesc ball-radius)
                            (.setRestitution 0.8)
@@ -205,7 +213,9 @@
          :physics rigid-body}))
 
 (defn assemble-moveable-wall [dimensions position]
-  (let* [half-dimensions (-> (.clone dimensions)
+  (let* [dimensions (.divideScalar (.clone dimensions) physics-scaling-factor)
+         position (.divideScalar (.clone position) physics-scaling-factor)
+         half-dimensions (-> (.clone dimensions)
                              (.divideScalar 2))
          geometry (three/BoxGeometry. (:x dimensions)
                                       (:y dimensions)
@@ -241,10 +251,10 @@
   (js-await (init-audio))
   (input/init)
 
-  (let [cube (assemble-physics-ball (three/Vector3. 0 10 0) (three/Vector3. 0 -10 0))]
+  (let [cube (assemble-physics-ball (three/Vector3. 0 100 0) (three/Vector3. 0 0 0))]
     (.add ecs cube))
 
-  (let [ground (assemble-moveable-wall (three/Vector3. 10 1 10) (three/Vector3.))]
+  (let [ground (assemble-moveable-wall (three/Vector3. 100 1 100) (three/Vector3.))]
     (.add ecs ground))
 
   (.setAnimationLoop renderer animation-frame))
