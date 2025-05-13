@@ -46,7 +46,7 @@
   (js/document.addEventListener "keydown" (fn [e] (set! (aget key-pressed e.key) true)))
   (js/document.addEventListener "keyup" (fn [e] (set! (aget key-pressed e.key) false))))
 
-(defn ^:export post-update []
+(defn ^:export post-update [_game]
   (set! last-mouse-position (js/Object.assign {} mouse-position))
   (set! last-mouse-down (js/Object.assign {} mouse-down))
   (set! last-key-pressed (js/Object.assign {} key-pressed))
