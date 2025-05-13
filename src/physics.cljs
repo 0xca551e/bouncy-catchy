@@ -6,17 +6,19 @@
 (defn ^:export step-physics [game]
   (let [physics (:physics game)
         event-queue (:physics-event-queue game)]
+    (.forEach (.-colliders physics) (fn [c]
+                                      (let [colliding (some-> c .-userData .-colliding)]
+                                        (when (or (= colliding true) (= colliding false))
+                                          (set! (.. c -userData -lastcolliding) colliding)))))
     (.step physics event-queue)
     (.drainCollisionEvents event-queue (fn [handle1 handle2 started]
-                                         (when started
-                                           (let [bodies (.-colliders physics)
-                                                 a (.get bodies handle1)
-                                                 b (.get bodies handle2)
-                                                 a-instrument (some-> a .-userData .-entity .-instrument)
-                                                 b-instrument (some-> b .-userData .-entity .-instrument)]
-                                             (println a-instrument b-instrument)
-                                             (when a-instrument (g/playsound))
-                                             (when b-instrument (g/playsound))))))))
+                                         (let [bodies (.-colliders physics)
+                                               a (.get bodies handle1)
+                                               b (.get bodies handle2)]
+                                           (set! (.-userData a) (or (.-userData a) {}))
+                                           (set! (.-userData b) (or (.-userData b) {}))
+                                           (set! (.. a -userData -colliding) started)
+                                           (set! (.. b -userData -colliding) started))))))
 
 (defn ^:export sync-mesh-to-physics [game]
   (let [control (:transform-controls game)

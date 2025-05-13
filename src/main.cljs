@@ -17,6 +17,7 @@
     (timerbar/update-timerbar-entity game delta)
     (physics/sync-mesh-to-physics game)
     (wall/handle-object-selection game)
+    (wall/handle-collision game)
     (renderer/render game)
     (input/post-update game))
   (set! last-time time))

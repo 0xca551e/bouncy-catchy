@@ -3,8 +3,20 @@
    ["@dimforge/rapier3d" :as rapier]
    ["three" :as three]
    [common :as common]
+   [game :as g]
    [input :as input]
    [timerbar :as timerbar]))
+
+(defn ^:export handle-collision [game]
+  (let [queries (:queries game)
+        instrument-query (:instrument queries)]
+    (doseq [{physics :physics} instrument-query]
+      (let [user-data (:userData physics)
+            colliding (:colliding user-data)
+            last-colliding (:lastcolliding user-data)
+            just-collided (and colliding (not last-colliding))]
+        (when just-collided
+          (g/playsound))))))
 
 (defn ^:export handle-object-selection [game]
   (let [camera (:camera game)
@@ -15,9 +27,9 @@
       (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
              first-hit (nth intersects 0)
              controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
-            (if (and first-hit controllable)
-              (.attach control (.-object first-hit))
-              (.detach control))))
+        (if (and first-hit controllable)
+          (.attach control (.-object first-hit))
+          (.detach control))))
     (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
       (when (and controllable (not (.-dragging control)))
         (cond
