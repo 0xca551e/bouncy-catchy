@@ -100,6 +100,8 @@
 (.subscribe (.-onEntityRemoved instrument-query) (fn [e]
                                                    (.setActiveEvents (:physics e) rapier/ActiveEvents.NONE)))
 
+(def hitmarker-query (.with ecs "hitmarker"))
+
 (def timerbar-entity (timerbar/assemble))
 (.add ecs timerbar-entity)
 
@@ -119,6 +121,7 @@
              :physics physics-query
              :mesh mesh-query
              :svg svg-query
-             :instrument instrument-query}
+             :instrument instrument-query
+             :hitmarker hitmarker-query}
    :timerbar-entity timerbar-entity
    :transform-controls transform-controls})

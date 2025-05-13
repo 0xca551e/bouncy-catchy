@@ -16,7 +16,10 @@
             last-colliding (:lastcolliding user-data)
             just-collided (and colliding (not last-colliding))]
         (when just-collided
-          (g/playsound))))))
+          (g/playsound)
+          (let [hitmarker (timerbar/assemble-hitmarker (:timerbar-entity game))
+                ecs (:ecs game)]
+            (.add ecs hitmarker)))))))
 
 (defn ^:export handle-object-selection [game]
   (let [camera (:camera game)

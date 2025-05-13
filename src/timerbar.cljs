@@ -25,10 +25,22 @@
         svg (.-svg e)
         timerbar (.-timerbar e)
         position (.-position timerbar)
-        duration (.-duration timerbar)]
+        duration (.-duration timerbar)
+        queries (:queries game)
+        hitmarker-query (:hitmarker queries)]
     (set! (aget timerbar :position) (+ position delta))
     (when (> position duration)
       (set! (.-position timerbar) 0)
-                                        ; spawn marbles, despawn hit markers from last attempt, etc.
-      )
+      (doseq [hitmarker-entity hitmarker-query]                  ; spawn marbles, despawn hit markers from last attempt, etc.
+        (.remove (:ecs game) hitmarker-entity)))
     (.setAttribute svg "cx" (timing-to-x position duration))))
+
+(defn ^:export assemble-hitmarker [timerbar-entity]
+  (let [hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
+    (.setAttribute hud-element "r" 5)
+    (.setAttribute hud-element "cx" (timing-to-x (-> timerbar-entity :timerbar :position)
+                                                 (-> timerbar-entity :timerbar :duration)))
+    (.setAttribute hud-element "cy" (timing-y))
+    {:svg hud-element
+     :hitmarker true}))
+
