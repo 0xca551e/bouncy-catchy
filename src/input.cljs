@@ -55,6 +55,7 @@
                                   (* 2)
                                   (- 1)))
     (aset (:pointer input) :y (-> input :mouse-position :y
-                                  (/ (.-innerWidth js/window))
+                                  (/ (.-innerHeight js/window))
                                   (* 2)
-                                  (- 1)))))
+                                  (+ 1)
+                                  (-)))))
