@@ -74,6 +74,7 @@
         (.setAttribute hud-element "cx" (common/timing-to-x target-time duration))
         (.setAttribute hud-element "cy" (common/timing-y))
         (.setAttribute hud-element "r" 10)
+        (.setAttribute hud-element "fill" "#FF0000")
         (set! (.-receiveShadow mesh) true)
         {:mesh mesh
          :physics collider
