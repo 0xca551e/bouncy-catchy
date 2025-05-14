@@ -1,62 +1,60 @@
 (ns input
-  (:require ["three" :as three]))
+  (:require ["three" :as three]
+            [ecs :as ecs]))
 
-(def ^:export mouse-position (three/Vector2.))
-(def last-mouse-position (three/Vector2.))
-(defn ^:export mouse-delta []
-  (-> (.clone mouse-position)
-      (.sub last-mouse-position)))
-
-(def mouse-down {})
-(def last-mouse-down {})
-(defn ^:export is-mouse-down [button]
-  (get mouse-down button))
-(defn ^:export just-mouse-down [button]
-  (and (aget mouse-down button) (not (aget last-mouse-down button))))
-(defn ^:export just-mouse-up [button]
-  (and (aget last-mouse-down button) (not (aget mouse-down button))))
-
-(def mouse-down-start-position {})
 (def drag-square-threshold (* 10 10))
-(defn ^:export just-mouse-up-nodrag [button]
-  (and (just-mouse-up button)
-       (<= (.distanceToSquared (aget mouse-down-start-position button) mouse-position)
+
+(defn ^:export assemble []
+  (let [mouse-position (three/Vector2.)
+        last-mouse-position (three/Vector2.)
+        mouse-down {}
+        last-mouse-down {}
+        mouse-down-start-position {}
+        key-pressed {}
+        last-key-pressed {}]
+    {:input {:mouse-position mouse-position
+             :last-mouse-position last-mouse-position
+             :mouse-down mouse-down
+             :last-mouse-down last-mouse-down
+             :mouse-down-start-position mouse-down-start-position
+             :key-pressed key-pressed
+             :last-key-pressed last-key-pressed
+             :pointer (three/Vector2.)
+             :raycaster (three/Raycaster.)}}))
+
+(defn ^:export mouse-delta [input]
+  (let [{mouse-position :mouse-position
+         last-mouse-position :last-mouse-position} input]
+    (-> (.clone mouse-position)
+        (.sub last-mouse-position))))
+(defn ^:export is-mouse-down [input button]
+  (get (:mouse-down input) button))
+(defn ^:export just-mouse-down [input button]
+  (and (get (:mouse-down input) button) (not (get (:last-mouse-down input) button))))
+(defn ^:export just-mouse-up [input button]
+  (and (get (:last-mouse-down input) button) (not (get (:mouse-down input) button))))
+(defn ^:export just-mouse-up-nodrag [input button]
+  (and (just-mouse-up input button)
+       (<= (.distanceToSquared (get (:mouse-down-start-position input) button) (:mouse-position input))
            drag-square-threshold)))
+(defn ^:export is-key-pressed [input key]
+  (get (:key-pressed input) key))
+(defn ^:export just-key-pressed [input key]
+  (and (get (:key-pressed input) key) (not (get (:last-key-pressed input) key))))
+(defn ^:export just-key-released [input key]
+  (and (get (:last-key-pressed input) key) (not (get (:key-pressed input) key))))
 
-(def key-pressed {})
-(def last-key-pressed {})
-(defn ^:export is-key-pressed [key]
-  (get key-pressed key))
-(defn ^:export just-key-pressed [key]
-  (and (aget key-pressed key) (not (aget last-key-pressed key))))
-(defn ^:export just-key-released [key]
-  (and (aget last-key-pressed key) (not (aget key-pressed key))))
+(defn ^:export post-update [game]
+  (let [input (ecs/get-single-component game :input)]
+    (aset input :last-mouse-position (js/Object.assign {} (:mouse-position input)))
+    (aset input :last-mouse-down (js/Object.assign {} (:mouse-down input)))
+    (aset input :last-key-pressed (js/Object.assign {} (:key-pressed input)))
 
-(def ^:export pointer (three/Vector2.))
-(def ^:export raycaster (three/Raycaster.))
-
-(defn ^:export init []
-  (js/document.addEventListener "mousemove" (fn [e]
-                                              (set! mouse-position.x e.clientX)
-                                              (set! mouse-position.y e.clientY)))
-  (js/document.addEventListener "mousedown" (fn [e]
-                                              (set! (aget mouse-down e.button) true)
-                                              (set! (aget mouse-down-start-position e.button) (.clone mouse-position))))
-  (js/document.addEventListener "mouseup" (fn [e] (set! (aget mouse-down e.button) false)))
-  (js/document.addEventListener "keydown" (fn [e] (set! (aget key-pressed e.key) true)))
-  (js/document.addEventListener "keyup" (fn [e] (set! (aget key-pressed e.key) false))))
-
-(defn ^:export post-update [_game]
-  (set! last-mouse-position (js/Object.assign {} mouse-position))
-  (set! last-mouse-down (js/Object.assign {} mouse-down))
-  (set! last-key-pressed (js/Object.assign {} key-pressed))
-
-  (set! (.-x pointer) (-> (:x mouse-position)
-                          (/ (.-innerWidth js/window))
-                          (* 2)
-                          (- 1)))
-  (set! (.-y pointer) (-> (:y mouse-position)
-                          (/ (.-innerHeight js/window))
-                          (* 2)
-                          (+ 1)
-                          (-))))
+    (aset (:pointer input) :x (-> input :mouse-position :x
+                                  (/ (.-innerWidth js/window))
+                                  (* 2)
+                                  (- 1)))
+    (aset (:pointer input) :y (-> input :mouse-position :y
+                                  (/ (.-innerWidth js/window))
+                                  (* 2)
+                                  (- 1)))))

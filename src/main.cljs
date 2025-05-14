@@ -1,13 +1,17 @@
 (ns main
   (:require
+   ["miniplex" :as miniplex]
    ["three" :as three]
+   [audio :as audio]
+   [ecs :as ecs]
    [ball :as ball]
-   [game :refer [initaudio game]]
    [input :as input]
    [physics :as physics]
    [renderer :as renderer]
    [timerbar :as timerbar]
    [wall :as wall]))
+
+(def game (ecs/make))
 
 (def last-time 0)
 (defn animation-frame [time]
@@ -23,20 +27,16 @@
   (set! last-time time))
 
 (defn ^:async start []
-  (input/init)
-  (js-await (initaudio))
-
+  (let [audio (js-await (audio/assemble))]
+    (.add (:world game) audio))
+  (.add (:world game) (input/assemble))
+  (.add (:world game) (physics/assemble))
+  (.add (:world game) (renderer/assemble))
+  (.add (:world game) (timerbar/assemble))
   (let [cube (ball/assemble game (three/Vector3. 0 100 0) (three/Vector3. 0 0 0))]
-    (.add (:ecs game) cube))
-
+    (.add (:world game) cube))
   (let [ground (wall/assemble-moveable-wall game (three/Vector3. 100 3 100) (three/Vector3.))]
-    (.add (:ecs game) ground))
+    (.add (:world game) ground))
+  (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
 
-  (.setAnimationLoop game/renderer animation-frame))
-
-(.addEventListener
- js/document
- "click"
- (fn []
-   (start))
- {:once true})
+(.addEventListener js/document "click" start {:once true})

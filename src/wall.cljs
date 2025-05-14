@@ -2,32 +2,34 @@
   (:require
    ["@dimforge/rapier3d" :as rapier]
    ["three" :as three]
+   [audio :as audio]
    [common :as common]
-   [game :as g]
-   [input :as input]
-   [timerbar :as timerbar]))
+   [ecs :as ecs]
+   [hitmarker :as hitmarker]
+   [input :as input]))
 
 (defn ^:export handle-collision [game]
-  (let [queries (:queries game)
-        instrument-query (:instrument queries)]
-    (doseq [{physics :physics} instrument-query]
+  (let [timerbar-entity (ecs/get-single game :timerbar)]
+    (doseq [{physics :physics} (-> game :queries :instrument)]
       (let [user-data (:userData physics)
             colliding (:colliding user-data)
             last-colliding (:lastcolliding user-data)
             just-collided (and colliding (not last-colliding))]
         (when just-collided
-          (g/playsound)
-          (let [hitmarker (timerbar/assemble-hitmarker (:timerbar-entity game))
-                ecs (:ecs game)]
-            (.add ecs hitmarker)))))))
+          (audio/playsound game)
+          (.add (:world game) (hitmarker/assemble timerbar-entity)))))))
 
 (defn ^:export handle-object-selection [game]
-  (let [camera (:camera game)
-        scene (:scene game)
-        control (:transform-controls game)]
-    (.setFromCamera input/raycaster input/pointer camera)
-    (when (input/just-mouse-up-nodrag 0)
-      (let* [intersects (.intersectObjects input/raycaster (.-children scene) false)
+  (let [renderer (ecs/get-single-component game :renderer)
+        camera (:camera renderer)
+        scene (:scene renderer)
+        control (:transform-controls renderer)
+        input (ecs/get-single-component game :input)
+        raycaster (:raycaster input)
+        pointer (:pointer input)]
+    (.setFromCamera raycaster pointer camera)
+    (when (input/just-mouse-up-nodrag input 0)
+      (let* [intersects (.intersectObjects raycaster (.-children scene) false)
              first-hit (nth intersects 0)
              controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
         (if (and first-hit controllable)
@@ -36,10 +38,10 @@
     (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
       (when (and controllable (not (.-dragging control)))
         (cond
-          (and (:translate controllable) (input/just-key-pressed "g"))
+          (and (:translate controllable) (input/just-key-pressed input "g"))
           (set! (.-current controllable) "translate")
 
-          (and (:rotate controllable) (input/just-key-pressed "r"))
+          (and (:rotate controllable) (input/just-key-pressed input "r"))
           (set! (.-current controllable) "rotate"))
         (.setMode control (.-current controllable))
         (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
@@ -47,7 +49,7 @@
         (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z)))))))
 
 (defn ^:export assemble-moveable-wall [game dimensions position]
-  (let* [physics (:physics game)
+  (let* [physics-engine (ecs/get-single-component game :physics-engine)
          dimensions (.divideScalar (.clone dimensions) common/physics-to-mesh-scaling-factor)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
          half-dimensions (-> (.clone dimensions)
@@ -64,13 +66,13 @@
                            (.setTranslation (:x position)
                                             (:y position)
                                             (:z position)))
-         collider (.createCollider physics collider-desc)
+         collider (.createCollider (:world physics-engine) collider-desc)
 
          target-time 1000
          duration 3000
          hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
-        (.setAttribute hud-element "cx" (timerbar/timing-to-x target-time duration))
-        (.setAttribute hud-element "cy" (timerbar/timing-y))
+        (.setAttribute hud-element "cx" (common/timing-to-x target-time duration))
+        (.setAttribute hud-element "cy" (common/timing-y))
         (.setAttribute hud-element "r" 10)
         (set! (.-receiveShadow mesh) true)
         {:mesh mesh

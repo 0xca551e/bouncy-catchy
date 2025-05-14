@@ -1,18 +1,27 @@
 (ns physics
   (:require
+   ["@dimforge/rapier3d" :as rapier]
    [common :as common]
-   [game :as g]))
+   [ecs :as ecs]))
+
+(defn ^:export assemble []
+  (let [gravity {:x 0 :y -9.81 :z 0}
+        world (rapier/World. gravity)]
+    {:physics-engine {:world world
+                      :event-queue (rapier/EventQueue. true)}}))
 
 (defn ^:export step-physics [game]
-  (let [physics (:physics game)
-        event-queue (:physics-event-queue game)]
-    (.forEach (.-colliders physics) (fn [c]
-                                      (let [colliding (some-> c .-userData .-colliding)]
-                                        (when (or (= colliding true) (= colliding false))
-                                          (set! (.. c -userData -lastcolliding) colliding)))))
-    (.step physics event-queue)
+  (let [physics-engine (ecs/get-single-component game :physics-engine)
+        world (:world physics-engine)
+        event-queue (:event-queue physics-engine)]
+    (.forEach (.-colliders world) (fn [c]
+                                    ;; (println (.-userData c))
+                                    (let [colliding (some-> c .-userData .-colliding)]
+                                      (when (or (= colliding true) (= colliding false))
+                                        (set! (.. c -userData -lastcolliding) colliding)))))
+    (.step world event-queue)
     (.drainCollisionEvents event-queue (fn [handle1 handle2 started]
-                                         (let [bodies (.-colliders physics)
+                                         (let [bodies (.-colliders world)
                                                a (.get bodies handle1)
                                                b (.get bodies handle2)]
                                            (set! (.-userData a) (or (.-userData a) {}))
@@ -21,12 +30,11 @@
                                            (set! (.. b -userData -colliding) started))))))
 
 (defn ^:export sync-mesh-to-physics [game]
-  (let [control (:transform-controls game)
-        queries (:queries game)
-        mesh-physics-query (:mesh-physics queries)]
+  (let [control (:transform-controls (ecs/get-single-component game :renderer))
+        mesh-physics-query (-> game :queries :mesh-physics)]
     (doseq [{mesh :mesh body :physics} mesh-physics-query]
-    ;; when the object is a controllable wall, we don't want the physics to override our changes to the mesh
-    ;; so we do the reverse: sync the physics body to the mesh
+      ;; when the object is a controllable wall, we don't want the physics to override our changes to the mesh
+      ;; so we do the reverse: sync the physics body to the mesh
       (if (= (.-object control) mesh)
         (let [t (.-position mesh)
               r (.-quaternion mesh)]
