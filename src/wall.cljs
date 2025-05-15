@@ -28,7 +28,8 @@
         control (:transform-controls renderer)
         input (ecs/get-single-component game :input)
         raycaster (:raycaster input)
-        pointer (:pointer input)]
+        pointer (:pointer input)
+        timerbar (ecs/get-single-component game :timerbar)]
     (.setFromCamera raycaster pointer camera)
     (when (input/just-mouse-up-nodrag input 0)
       (let* [intersects (.intersectObjects raycaster (.-children scene) false)
@@ -38,6 +39,8 @@
           (.attach control (.-object first-hit))
           (.detach control))))
     (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
+      (when (and controllable (.-dragging control))
+        (aset timerbar :modified-during-this-measure true))
       (when (and controllable (not (.-dragging control)))
         (cond
           (and (:translate controllable) (input/just-key-pressed input "g"))

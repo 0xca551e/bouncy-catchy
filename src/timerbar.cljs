@@ -22,7 +22,8 @@
                          {:walls [(wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. 20 0 0) 500)
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. -100 10 0) 1500)]
                           :spawner (spawner/assemble (three/Vector3. 100 3 0) (three/Vector3. -1 4 0))}]
-                :hits []}}))
+                :hits []
+                :modified-during-this-measure false}}))
 
 (defn ^:export setup-level [game level-index]
   (let [e (ecs/get-single-component game :timerbar)]
@@ -41,8 +42,9 @@
       (set! (.-position timerbar) 0)
       ;; verify hits
       (println (let [pairs (vec (map vector (:hits timerbar) (-> timerbar :levels (nth (:current-level timerbar)) :walls)))]
-                 (and ;; TODO: also check if user moved something around this loop
+                 (and
                   ;; TODO: check if the marble has been caught
+                  (not (:modified-during-this-measure timerbar))
                   (= (.-length (:hits timerbar)) (.-length (-> timerbar :levels (nth (:current-level timerbar)) :walls)))
                   (every? (fn [[hit wall]]
                             (and (= wall (:wall hit))
@@ -52,6 +54,7 @@
                           pairs))))
       ;; reset hit verification
       (set! (.-length (:hits timerbar)) 0)
+      (aset timerbar :modified-during-this-measure false)
       ;; reset hitmarkers
       (doseq [hitmarker-entity (-> game :queries :hitmarker)]
         (.remove (:world game) hitmarker-entity))
