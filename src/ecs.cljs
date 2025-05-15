@@ -24,6 +24,7 @@
                  :physics-engine (.with world "physics-engine")
                  :renderer (.with world "renderer")
                  ;; regular queries
+                 :ball (.with world "ball")
                  :hitmarker (.with world "hitmarker")
                  :instrument (.with world "instrument" "physics")
                  :mesh (.with world "mesh")

@@ -32,8 +32,6 @@
   (.add (:world game) (physics/assemble))
   (.add (:world game) (renderer/assemble))
   (.add (:world game) (timerbar/assemble game))
-  (let [cube (ball/assemble game (three/Vector3. 0 100 0) (three/Vector3. 0 0 0))]
-    (.add (:world game) cube))
   (timerbar/setup-level game)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
 

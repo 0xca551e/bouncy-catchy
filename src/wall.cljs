@@ -50,7 +50,7 @@
         (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
         (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z)))))))
 
-(defn ^:export assemble-moveable-wall [game dimensions position]
+(defn ^:export assemble-moveable-wall [game dimensions position target-time]
   (let* [physics-engine (ecs/get-single-component game :physics-engine)
          dimensions (.divideScalar (.clone dimensions) common/physics-to-mesh-scaling-factor)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
@@ -70,7 +70,6 @@
                                             (:z position)))
          collider (.createCollider (:world physics-engine) collider-desc)
 
-         target-time 1000
          hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
         (.setAttribute hud-element "cy" (common/timing-y))
         (.setAttribute hud-element "r" 10)
@@ -79,7 +78,7 @@
         {:mesh mesh
          :physics collider
          :controllable {:current "translate"
-                        :translate {:x true}
+                        :translate {:y true}
                         :rotate {:z true}}
          :instrument true
          :timed-requirement target-time
