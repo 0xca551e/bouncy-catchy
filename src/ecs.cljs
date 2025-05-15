@@ -40,6 +40,9 @@
      (fn [entity]
        (let [input (:input entity)]
          (js/document.addEventListener
+          "contextmenu"
+          (fn [e] (.preventDefault e)))
+         (js/document.addEventListener
           "mousemove"
           (fn [e]
             (aset (:mouse-position input) :x e.clientX)
