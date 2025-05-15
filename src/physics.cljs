@@ -31,10 +31,11 @@
 (defn ^:export sync-mesh-to-physics [game]
   (let [control (:transform-controls (ecs/get-single-component game :renderer))
         mesh-physics-query (-> game :queries :mesh-physics)]
-    (doseq [{mesh :mesh body :physics} mesh-physics-query]
+    (doseq [{mesh :mesh body :physics relative-wall :relative-wall} mesh-physics-query]
       ;; when the object is a controllable wall, we don't want the physics to override our changes to the mesh
       ;; so we do the reverse: sync the physics body to the mesh
-      (if (= (.-object control) mesh)
+      ;; we also sync physics to mesh for relative walls because their system applies transforms from the mesh
+      (if (or (= (.-object control) mesh) relative-wall)
         (let [t (.-position mesh)
               r (.-quaternion mesh)]
           (.setTranslation body (.divideScalar (.clone t) common/physics-to-mesh-scaling-factor))

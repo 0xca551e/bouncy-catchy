@@ -16,10 +16,17 @@
      :timerbar {:position 0
                 :duration 3000
                 :current-level -1
-                :levels [{:walls [(wall/assemble-moveable-wall game (three/Vector3. 100 3 100) (three/Vector3.) 1000)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 50 3 50) (three/Vector3. 100 0 0) 2000)]
-                          :spawner (spawner/assemble (three/Vector3. -100 3 0) (three/Vector3. 1 4 0))}
-                         {:walls [(wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. 20 0 0) 500)
+                :levels [(let [main-wall (wall/assemble-moveable-wall game (three/Vector3. 100 3 100) (three/Vector3.) 1000)]
+                           {;; TODO: make a function that automatically offset walls and spawner by center
+                            :center (three/Vector3.)
+                            :walls [main-wall
+                                    ;(wall/assemble-moveable-wall game (three/Vector3. 50 3 50) (three/Vector3. 100 0 0) 2000)
+                                    ]
+                            :relative-walls [(wall/assemble-relative-wall game (three/Vector3. 20 3 20) main-wall (three/Vector3. 100 0 0) (three/Vector3.) 0)
+                                             (wall/assemble-relative-wall game (three/Vector3. 20 3 20) main-wall (three/Vector3. 0 10 0) (three/Vector3. 0 0 0) -0.7)]
+                            :spawner (spawner/assemble (three/Vector3. -100 3 0) (three/Vector3. 1 4 0))})
+                         {:center (three/Vector3.)
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. 20 0 0) 500)
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. -100 10 0) 1500)]
                           :spawner (spawner/assemble (three/Vector3. 100 3 0) (three/Vector3. -1 4 0))}]
                 :hits []
@@ -30,7 +37,9 @@
     (aset e :current-level level-index)
     (doseq [wall (-> e :levels (nth level-index) :walls)]
       (.setAttribute (:svg wall) "cx" (common/timing-to-x (:timed-requirement wall) (:duration e)))
-      (.add (:world game) wall))))
+      (.add (:world game) wall))
+    (doseq [relative-wall (-> e :levels (nth level-index) :relative-walls)]
+      (.add (:world game) relative-wall))))
 (defn advance-level [game]
   (let [timerbar (ecs/get-single-component game :timerbar)
         prev-level-index (:current-level timerbar)]

@@ -37,9 +37,9 @@
       (let* [intersects (.intersectObjects raycaster (.-children scene) false)
              first-hit (nth intersects 0)
              controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
-        (if (and first-hit controllable)
-          (.attach control (.-object first-hit))
-          (.detach control))))
+            (if (and first-hit controllable)
+              (.attach control (.-object first-hit))
+              (.detach control))))
     (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
       (when (and controllable (.-dragging control))
         (aset timerbar :modified-during-this-measure true))
@@ -57,6 +57,53 @@
         (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
         (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
         (set! (.-showZ control) (js/Boolean (-> controllable (get (.-current controllable)) :z)))))))
+
+;; TODO: all relative walls have a relative spawner counterpart, but you can re-use assemblespawner in timerbar.cljs
+(defn ^:export assemble-relative-wall [game dimensions parent offset center angle]
+  (let* [physics-engine (ecs/get-single-component game :physics-engine)
+         dimensions (.divideScalar (.clone dimensions) common/physics-to-mesh-scaling-factor)
+         half-dimensions (-> (.clone dimensions)
+                             (.divideScalar 2))
+         geometry (three/BoxGeometry. (:x dimensions)
+                                      (:y dimensions)
+                                      (:z dimensions))
+         material (three/MeshStandardMaterial. {:color 0xffffff})
+         mesh (three/Mesh. geometry material)
+         collider-desc (-> (.cuboid rapier/ColliderDesc
+                                    (:x half-dimensions)
+                                    (:y half-dimensions)
+                                    (:z half-dimensions)))
+         collider (.createCollider (:world physics-engine) collider-desc)]
+        (set! (.-receiveShadow mesh) true)
+        (.setEnabled collider false)
+        {:mesh mesh
+         :physics collider
+         :instrument true
+         :relative-wall {:parent parent
+                         :offset offset
+                         :center center
+                         :angle angle}}))
+
+(defn ^:export apply-relative-transform [game]
+  (doseq [wall (-> game :queries :relative-wall)]
+    (let* [mesh (:mesh wall)
+           relative-wall (:relative-wall wall)
+           parent (:parent relative-wall)
+           transformed (-> parent
+                           (aget :mesh)
+                           (aget :position)
+                           (.clone)
+                           (.sub (:center relative-wall))
+                           (.applyAxisAngle (three/Vector3. 0 1 0) (:angle relative-wall))
+                           (.add (:center relative-wall))
+                           (.add (:offset relative-wall)))]
+          (.copy (.-position mesh) transformed)
+          (-> mesh
+              .-quaternion
+              (.copy (-> parent
+                         :mesh
+                         .-quaternion)))
+          (.rotateY mesh (:angle relative-wall)))))
 
 (defn ^:export assemble-moveable-wall [game dimensions position target-time]
   (let* [physics-engine (ecs/get-single-component game :physics-engine)

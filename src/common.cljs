@@ -1,5 +1,9 @@
 (ns common)
 
+(defn ^:export p [x]
+  (println x)
+  x)
+
 (defn ^:export lerp [t a b] (+ a (* (- b a) t)))
 (defn ^:export inverseLerp [v a b] (/ (- v a) (- b a)))
 (defn ^:export remap

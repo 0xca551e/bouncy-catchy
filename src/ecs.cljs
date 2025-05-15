@@ -30,6 +30,7 @@
                  :mesh (.with world "mesh")
                  :mesh-physics (.with world "mesh" "physics")
                  :physics (.with world "physics")
+                 :relative-wall (.with world "relative-wall")
                  :svg (.with world "svg")
                  :timerbar (.with world "timerbar")}
         result {:world world

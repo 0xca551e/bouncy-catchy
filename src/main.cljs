@@ -21,6 +21,7 @@
     (when (> accumulator timestep-ms)
       (set! accumulator (mod accumulator timestep-ms))
       (renderer/resize-to-display-size game)
+      (wall/apply-relative-transform game)
       (physics/step-physics game)
       (timerbar/update-timerbar-entity game timestep-ms)
       (physics/sync-mesh-to-physics game)
