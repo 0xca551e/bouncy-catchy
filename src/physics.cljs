@@ -15,7 +15,6 @@
         world (:world physics-engine)
         event-queue (:event-queue physics-engine)]
     (.forEach (.-colliders world) (fn [c]
-                                    ;; (println (.-userData c))
                                     (let [colliding (some-> c .-userData .-colliding)]
                                       (when (or (= colliding true) (= colliding false))
                                         (set! (.. c -userData -lastcolliding) colliding)))))

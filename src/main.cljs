@@ -1,6 +1,5 @@
 (ns main
   (:require
-   ["miniplex" :as miniplex]
    ["three" :as three]
    [audio :as audio]
    [ecs :as ecs]

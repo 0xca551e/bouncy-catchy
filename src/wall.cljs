@@ -10,14 +10,16 @@
 
 (defn ^:export handle-collision [game]
   (let [timerbar-entity (ecs/get-single game :timerbar)]
-    (doseq [{physics :physics} (-> game :queries :instrument)]
-      (let [user-data (:userData physics)
+    (doseq [e (-> game :queries :instrument)]
+      (let [physics (:physics e)
+            user-data (:userData physics)
             colliding (:colliding user-data)
             last-colliding (:lastcolliding user-data)
             just-collided (and colliding (not last-colliding))]
         (when just-collided
           (audio/playsound game)
-          (.add (:world game) (hitmarker/assemble timerbar-entity)))))))
+          (.add (:world game) (hitmarker/assemble timerbar-entity))
+          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position)})))))))
 
 (defn ^:export handle-object-selection [game]
   (let [renderer (ecs/get-single-component game :renderer)
@@ -69,9 +71,7 @@
          collider (.createCollider (:world physics-engine) collider-desc)
 
          target-time 1000
-         duration 3000
          hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
-        (.setAttribute hud-element "cx" (common/timing-to-x target-time duration))
         (.setAttribute hud-element "cy" (common/timing-y))
         (.setAttribute hud-element "r" 10)
         (.setAttribute hud-element "fill" "#FF0000")
@@ -82,6 +82,5 @@
                         :translate {:x true}
                         :rotate {:z true}}
          :instrument true
-         :timed-requirement {:duration duration
-                             :target-time target-time}
+         :timed-requirement target-time
          :svg hud-element}))
