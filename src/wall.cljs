@@ -18,8 +18,9 @@
             just-collided (and colliding (not last-colliding))]
         (when just-collided
           (audio/playsound game)
-          (.add (:world game) (hitmarker/assemble timerbar-entity))
-          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position)})))))))
+          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position)}))
+          (when (:timed-requirement e)
+            (.add (:world game) (hitmarker/assemble timerbar-entity))))))))
 
 (defn ^:export handle-object-selection [game]
   (let [renderer (ecs/get-single-component game :renderer)

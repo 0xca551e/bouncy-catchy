@@ -31,6 +31,17 @@
     (doseq [wall (-> e :levels (nth level-index) :walls)]
       (.setAttribute (:svg wall) "cx" (common/timing-to-x (:timed-requirement wall) (:duration e)))
       (.add (:world game) wall))))
+(defn advance-level [game]
+  (let [timerbar (ecs/get-single-component game :timerbar)
+        prev-level-index (:current-level timerbar)]
+    ;; remove level interaction components for previous level
+    (doseq [wall (-> timerbar :levels (nth prev-level-index) :walls)]
+      (println wall)
+      (.removeComponent (:world game) wall "svg")
+      (.removeComponent (:world game) wall "controllable")
+      (.removeComponent (:world game) wall "timed-requirement"))
+    ;; TODO: handle cutscene once past the final level (since there is no next level)
+    (setup-level game (+ prev-level-index 1))))
 (defn ^:export update-timerbar-entity [game delta]
   (let [e (ecs/get-single game :timerbar)
         svg (.-svg e)
@@ -40,18 +51,19 @@
     (set! (aget timerbar :position) (+ position delta))
     (when (> position duration)
       (set! (.-position timerbar) 0)
-      ;; verify hits
-      (println (let [pairs (vec (map vector (:hits timerbar) (-> timerbar :levels (nth (:current-level timerbar)) :walls)))]
-                 (and
+      ;; verify hits and set up next level on success
+      (when (let [pairs (vec (map vector (:hits timerbar) (-> timerbar :levels (nth (:current-level timerbar)) :walls)))]
+              (and
                   ;; TODO: check if the marble has been caught
-                  (not (:modified-during-this-measure timerbar))
-                  (= (.-length (:hits timerbar)) (.-length (-> timerbar :levels (nth (:current-level timerbar)) :walls)))
-                  (every? (fn [[hit wall]]
-                            (and (= wall (:wall hit))
-                                 (< (js/Math.abs (- (:time hit)
-                                                    (:timed-requirement wall)))
-                                    timing-error-margin-ms)))
-                          pairs))))
+               (not (:modified-during-this-measure timerbar))
+               (= (.-length (:hits timerbar)) (.-length (-> timerbar :levels (nth (:current-level timerbar)) :walls)))
+               (every? (fn [[hit wall]]
+                         (and (= wall (:wall hit))
+                              (< (js/Math.abs (- (:time hit)
+                                                 (:timed-requirement wall)))
+                                 timing-error-margin-ms)))
+                       pairs)))
+        (advance-level game))
       ;; reset hit verification
       (set! (.-length (:hits timerbar)) 0)
       (aset timerbar :modified-during-this-measure false)
