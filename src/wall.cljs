@@ -75,6 +75,7 @@
         (.setAttribute hud-element "r" 10)
         (.setAttribute hud-element "fill" "#FF0000")
         (set! (.-receiveShadow mesh) true)
+        (.setEnabled collider false)
         {:mesh mesh
          :physics collider
          :controllable {:current "translate"

@@ -89,6 +89,7 @@
     (.subscribe
      (.-onEntityAdded (:physics queries))
      (fn [e]
+       (.setEnabled (:physics e) true)
        (set! (.-userData (:physics e)) {:entity e})))
     (.subscribe
      (.-onEntityRemoved (:physics queries))

@@ -25,6 +25,7 @@
                            (.setRestitution 0.8)
                            (.setRestitutionCombineRule rapier/CoefficientCombineRule.Max))
          _collider (.createCollider (:world physics) collider-desc rigid-body)]
+    (.setEnabled rigid-body false)
     (set! (.-castShadow mesh) true)
     {:mesh mesh
      :physics rigid-body

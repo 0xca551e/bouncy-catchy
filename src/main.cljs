@@ -37,7 +37,7 @@
   (.add (:world game) (physics/assemble))
   (.add (:world game) (renderer/assemble))
   (.add (:world game) (timerbar/assemble game))
-  (timerbar/setup-level game)
+  (timerbar/setup-level game 1)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
 
 (.addEventListener js/document "click" start {:once true})
