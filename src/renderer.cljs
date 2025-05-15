@@ -1,6 +1,7 @@
 (ns renderer
   (:require
    ["three" :as three]
+   ["three/examples/jsm/controls/OrbitControls" :refer [OrbitControls]]
    ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]
    [common :as common]
    [ecs :as ecs]))
@@ -14,7 +15,8 @@
                    (.-innerHeight js/window))
                 0.1
                 1000)
-        transform-controls (TransformControls. camera js/document.body)]
+        transform-controls (TransformControls. camera js/document.body)
+        orbit-controls (OrbitControls. camera js/document.body)]
     (set! (.. renderer -shadowMap -enabled) true)
     (set! (.-background scene) (three/Color. 0xbfd1e5))
 
@@ -23,6 +25,8 @@
     (.lookAt camera 0 0 0)
 
     (.add scene (.getHelper transform-controls))
+
+    (aset orbit-controls :enableDamping true)
 
     (let [ambient-light (three/HemisphereLight. 0x555555 0xffffff)]
       (.add scene ambient-light))
@@ -45,7 +49,8 @@
     {:renderer {:renderer renderer
                 :scene scene
                 :camera camera
-                :transform-controls transform-controls}}))
+                :transform-controls transform-controls
+                :orbit-controls orbit-controls}}))
 
 (defn ^:export resize-to-display-size [game]
   (let [renderer (ecs/get-single-component game :renderer)
@@ -63,5 +68,9 @@
   (let [renderer-entity (ecs/get-single-component game :renderer)
         renderer (:renderer renderer-entity)
         scene (:scene renderer-entity)
-        camera (:camera renderer-entity)]
+        camera (:camera renderer-entity)
+        transform-controls (:transform-controls renderer-entity)
+        orbit-controls (:orbit-controls renderer-entity)]
+    (aset orbit-controls :enableRotate (not (aget transform-controls :dragging)))
+    (.update orbit-controls)
     (.render renderer scene camera)))

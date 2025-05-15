@@ -27,6 +27,7 @@
         camera (:camera renderer)
         scene (:scene renderer)
         control (:transform-controls renderer)
+        orbit-control (:orbit-controls renderer)
         input (ecs/get-single-component game :input)
         raycaster (:raycaster input)
         pointer (:pointer input)
@@ -48,7 +49,10 @@
           (set! (.-current controllable) "translate")
 
           (and (:rotate controllable) (input/just-key-pressed input "r"))
-          (set! (.-current controllable) "rotate"))
+          (set! (.-current controllable) "rotate")
+
+          (input/just-key-pressed input "f")
+          (aset orbit-control :target (-> control .-object .-userData .-entity :mesh .-position .clone)))
         (.setMode control (.-current controllable))
         (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
         (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
