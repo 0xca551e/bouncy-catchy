@@ -32,7 +32,20 @@
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. -156 55 0) (three/Euler. 0 0 (/ js/Math.PI 4)) {:x true :y true} {} 816.634)
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. -144 -22 0) (three/Euler. 0 0 (/ js/Math.PI 5)) {:x true :y true :z true} {} 816.634)
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 20 0 0) (three/Euler. 0 0  (/ js/Math.PI -12)) {:x true :y true} {} 816.634)]
-                          :spawner (spawner/assemble (three/Vector3. 40 40 0) (three/Vector3. -2 3 0))}]
+                          :spawner (spawner/assemble (three/Vector3. 40 40 0) (three/Vector3. -2 3 0))}
+                         {:center (three/Vector3.)
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 0 0 0) (three/Euler. 0 0 (/ js/Math.PI 6)) {} {} 816.634)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. -84 26 0) (three/Euler. 0 0 (/ js/Math.PI -4)) {:x true :y true} {} 816.634)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. -95 88 0) (three/Euler. 0 0 (/ js/Math.PI -6)) {:x true :y true} {} 816.634)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. -155 49) (three/Euler.) {:x true :y true} {} 816.634)]
+                          :spawner (spawner/assemble (three/Vector3. 0 100 0) (three/Vector3. 0 -5 0))}
+                         ;; {:center (three/Vector3.)
+                         ;;  :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 20 0 0) (three/Euler. 0 0 (/ js/Math.PI 6)) {:x true :y true} {} 816.634)
+                         ;;          (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 60 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 500))
+                         ;;          (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 100 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1000))
+                         ;;          (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 140 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1500))]
+                         ;;  :spawner (spawner/assemble (three/Vector3. 0 0 0) (three/Vector3. 0 5 0))}
+                         ]
                 :hits []
                 :modified-during-this-measure false}}))
 
