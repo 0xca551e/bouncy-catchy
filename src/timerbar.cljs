@@ -16,7 +16,7 @@
      :timerbar {:position 0
                 :duration 3000
                 :current-level -1
-                :levels [(let [main-wall (wall/assemble-moveable-wall game (three/Vector3. 100 3 100) (three/Vector3.) {} {} 1000)]
+                :levels [(let [main-wall (wall/assemble-moveable-wall game (three/Vector3. 100 3 100) (three/Vector3.) (three/Euler.) {} {} 1000)]
                            {;; TODO: make a function that automatically offset walls and spawner by center
                             :center (three/Vector3.)
                             :walls [main-wall
@@ -26,15 +26,20 @@
                                              (wall/assemble-relative-wall game (three/Vector3. 20 3 20) main-wall (three/Vector3. 0 10 0) (three/Vector3. 0 0 0) -0.7)]
                             :spawner (spawner/assemble (three/Vector3. -100 3 0) (three/Vector3. 1 4 0))})
                          {:center (three/Vector3.)
-                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. 20 0 0) {} {} 500)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. -100 10 0) {} {}1500)]
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. 20 0 0) (three/Euler.) {} {} 500)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 10 3 10) (three/Vector3. -100 10 0) (three/Euler.) {} {} 1500)]
                           :spawner (spawner/assemble (three/Vector3. 100 3 0) (three/Vector3. -1 4 0))}
                          {:center (three/Vector3.)
-                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 20 0 0) {} {} 816.633)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 60 0 0) {:x true :y true} {} (+ 816.633 500))
-                                  (wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 100 0 0) {:x true :y true} {} (+ 816.633 1000))
-                                  (wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 140 0 0) {:x true :y true} {} (+ 816.633 1500))]
-                          :spawner (spawner/assemble (three/Vector3. -35 0 0) (three/Vector3. 0.7 4 0))}]
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 20 0 0) (three/Euler.) {} {} 816.634)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 60 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 500))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 100 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1000))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 5 2 5) (three/Vector3. 140 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1500))]
+                          :spawner (spawner/assemble (three/Vector3. -35 0 0) (three/Vector3. 0.7 4 0))}
+                         {:center (three/Vector3.)
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 94 32 0) (three/Euler. 0 0 (/ js/Math.PI 2)) {:x true :y true} {} 316.654)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 31 -11 0) (three/Euler. 0 0 (/ js/Math.PI 2)) {:x true :y true} {} (+ 125 316.654))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 64 -45 0) (three/Euler.) {:x true :y true} {} (+ 250 316.654))]
+                          :spawner (spawner/assemble (three/Vector3. -40 0 0) (three/Vector3. 4 2 0))}]
                 :hits []
                 :modified-during-this-measure false}}))
 

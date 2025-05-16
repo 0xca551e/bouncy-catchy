@@ -38,7 +38,7 @@
              first-hit (nth intersects 0)
              controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
             (if (and first-hit controllable)
-              (.attach control (.-object first-hit))
+              (.attach control (-> first-hit .-object common/p))
               (.detach control))))
     (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
       (when (and controllable (.-dragging control))
@@ -105,10 +105,11 @@
                          .-quaternion)))
           (.rotateY mesh (:angle relative-wall)))))
 
-(defn ^:export assemble-moveable-wall [game dimensions position translate-controls rotate-controls target-time]
+(defn ^:export assemble-moveable-wall [game dimensions position rotation translate-controls rotate-controls target-time]
   (let* [physics-engine (ecs/get-single-component game :physics-engine)
          dimensions (.divideScalar (.clone dimensions) common/physics-to-mesh-scaling-factor)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
+         rotation (-> (three/Quaternion.) (.setFromEuler rotation))
          half-dimensions (-> (.clone dimensions)
                              (.divideScalar 2))
          geometry (three/BoxGeometry. (:x dimensions)
@@ -122,7 +123,8 @@
                                     (:z half-dimensions))
                            (.setTranslation (:x position)
                                             (:y position)
-                                            (:z position)))
+                                            (:z position))
+                           (.setRotation rotation))
          collider (.createCollider (:world physics-engine) collider-desc)
 
          hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
