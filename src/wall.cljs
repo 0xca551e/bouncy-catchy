@@ -18,7 +18,7 @@
             just-collided (and colliding (not last-colliding))]
         (when just-collided
           (audio/playsound game)
-          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position)}))
+          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position common/p)}))
           (when (:timed-requirement e)
             (.add (:world game) (hitmarker/assemble timerbar-entity))))))))
 
@@ -105,7 +105,7 @@
                          .-quaternion)))
           (.rotateY mesh (:angle relative-wall)))))
 
-(defn ^:export assemble-moveable-wall [game dimensions position target-time]
+(defn ^:export assemble-moveable-wall [game dimensions position translate-controls rotate-controls target-time]
   (let* [physics-engine (ecs/get-single-component game :physics-engine)
          dimensions (.divideScalar (.clone dimensions) common/physics-to-mesh-scaling-factor)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
@@ -134,8 +134,8 @@
         {:mesh mesh
          :physics collider
          :controllable {:current "translate"
-                        :translate {:y true}
-                        :rotate {:z true}}
+                        :translate translate-controls
+                        :rotate rotate-controls}
          :instrument true
          :timed-requirement target-time
          :svg hud-element}))

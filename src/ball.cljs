@@ -5,7 +5,7 @@
    [common :as common]
    [ecs :as ecs]))
 
-(def ball-radius 0.01)
+(def ball-radius 0.012)
 (defn ^:export assemble [game position velocity]
   (let* [physics (ecs/get-single-component game :physics-engine)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
