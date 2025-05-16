@@ -2,6 +2,7 @@
   (:require
    ["three" :as three]
    [audio :as audio]
+   [common :as common]
    [ecs :as ecs]
    [ball :as ball]
    [input :as input]
@@ -32,6 +33,7 @@
   (set! last-time time))
 
 (defn ^:async start []
+  (-> common/intro-container .-classList (.add "intro--fade-out"))
   (let [audio (js-await (audio/assemble))]
     (.add (:world game) audio))
   (.add (:world game) (input/assemble))
@@ -41,4 +43,4 @@
   (timerbar/setup-level game 3)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
 
-(.addEventListener js/document "click" start {:once true})
+(.addEventListener common/start-button "click" start {:once true})

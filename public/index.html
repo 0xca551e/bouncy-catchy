@@ -14,12 +14,42 @@
 	  width: 100vw;
 	  height: 100vh;
       }
-      #canvas, #hud {
+      #canvas, #hud, #intro {
 	  grid-row: 1;
 	  grid-column: 1;
 	  width: 100%;
 	  height: 100%;
 	  display: block;
+      }
+      #intro {
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  flex-direction: column;
+	  font-size: 32px;
+	  font-family: sans-serif;
+
+	  transition: opacity 2s, display 2s;
+      }
+      .intro--fade-out {
+	  opacity: 0;
+	  display: none;
+      }
+      #logo {
+	  animation: bouncy 2s infinite;
+      }
+      @keyframes bouncy {
+	  from, to { transform: translate(0%, 0%) scale(1, 1); }
+	  25% { transform: translate(0%, -20%) scale(0.9, 1.1); }
+	  50% { transform: translate(0%, 20%) scale(1.1, 0.9); }
+	  75% { transform: translate(0%, 0%) scale(0.95, 1.05); }
+      }
+      #start-button {
+	  border: 2px solid black;
+	  border-radius: 32px;
+	  padding: 16px 64px;
+	  background-color: white;
+	  z-index: 69420;
       }
     </style>
   </head>
@@ -31,6 +61,10 @@
 	xmlns="http://www.w3.org/2000/svg"
 	id="hud">
       </svg>
+      <div id="intro">
+	<img id="logo" src="/logo.png" draggable="false" />
+	<div id="start-button" type="button">Click here to start</div>
+      </div>
     </div>
     <script type="module" src="/js/main.js"></script>
   </body>

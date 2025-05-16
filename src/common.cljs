@@ -19,6 +19,12 @@
 (def ^:export hud
   (.querySelector js/document "#hud"))
 
+(def ^:export start-button
+  (.querySelector js/document "#start-button"))
+
+(def ^:export intro-container
+  (.querySelector js/document "#intro"))
+
 (def ^:export physics-to-mesh-scaling-factor 100)
 
 (def timing-padding-px 100)
