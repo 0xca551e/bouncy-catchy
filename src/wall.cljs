@@ -106,7 +106,7 @@
                          .-quaternion)))
           (.rotateY mesh (:angle relative-wall)))))
 
-(defn ^:export assemble-moveable-wall [game dimensions position rotation translate-controls rotate-controls target-time pitch]
+(defn ^:export assemble-moveable-wall [game color dimensions position rotation translate-controls rotate-controls target-time pitch]
   (let* [physics-engine (ecs/get-single-component game :physics-engine)
          dimensions (.divideScalar (.clone dimensions) common/physics-to-mesh-scaling-factor)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
@@ -116,7 +116,7 @@
          geometry (three/BoxGeometry. (:x dimensions)
                                       (:y dimensions)
                                       (:z dimensions))
-         material (three/MeshStandardMaterial. {:color 0xffffff})
+         material (three/MeshStandardMaterial. {:color color})
          mesh (three/Mesh. geometry material)
          collider-desc (-> (.cuboid rapier/ColliderDesc
                                     (:x half-dimensions)
@@ -130,8 +130,10 @@
 
          hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
         (.setAttribute hud-element "cy" (common/timing-y))
-        (.setAttribute hud-element "r" 10)
-        (.setAttribute hud-element "fill" "#FF0000")
+        (.setAttribute hud-element "r" 20)
+        (.setAttribute hud-element "fill" color)
+        (.setAttribute hud-element "stroke" "black")
+        (.setAttribute hud-element "stroke-width" 4)
         (set! (.-receiveShadow mesh) true)
         (.setEnabled collider false)
         {:mesh mesh
