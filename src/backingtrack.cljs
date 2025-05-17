@@ -9,7 +9,6 @@
 
 (defn ^:export play [game time]
   (let [backing-track (ecs/get-single-component game :backingtrack)]
-    ;; (println time)
     (loop []
       (let [current-note (aget (:notes backing-track) (:current-index backing-track))]
         (when (<= (:time current-note) time)

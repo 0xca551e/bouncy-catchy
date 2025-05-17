@@ -8,6 +8,22 @@
 
 (def timing-error-margin-ms 33)
 
+(def solutions [[(three/Vector3. 20 0 0)
+                 (three/Vector3. 46.53 39.12 0)
+                 (three/Vector3. 73.99 -12.773 0)
+                 (three/Vector3. 94.39 8.39 0)]
+                [(three/Vector3. 83 17.89 25)
+                 (three/Vector3. 40.34 -4.66 25)
+                 (three/Vector3. 69.85 -23.82 25)]
+                [(three/Vector3. 0 0 75)
+                 (three/Vector3. 99.33 30.23 50)
+                 (three/Vector3. 105.24 96.33 50)
+                 (three/Vector3. 118.57 49.54 50)]
+                [(three/Vector3. 104 0 75)
+                 (three/Vector3. 156.15 57.78 75)
+                 (three/Vector3. 156.3 -36.47 75)
+                 (three/Vector3. 278.25 -66.51 75)]])
+
 (defn ^:export assemble [game]
   (let [timing-bar-hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
     (.setAttribute timing-bar-hud-element "r" 5)
@@ -16,35 +32,33 @@
      :timerbar {:position 0
                 :duration 3000
                 :current-level -1
-                :levels [{:center (three/Vector3.)
-                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 20 0 0) (three/Euler.) {} {} 816.634)
+                :levels [{:clap-point (three/Vector3.)
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 20 0 0) (three/Euler.) {} {} 816.634)
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 60 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 500))
-                                  (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 100 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1000))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 100 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1000))
                                   (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 140 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1500))]
+                          :clap-time (+ 816.634 2000)
                           :spawner (spawner/assemble (three/Vector3. -35 0 0) (three/Vector3. 0.7 4 0))}
+                         {:clap-point (three/Vector3.)
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 94 32 25) (three/Euler. 0 0 (/ js/Math.PI 2)) {:x true :y true} {} 316.654)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 31 -11 25) (three/Euler. 0 0 (/ js/Math.PI 2)) {:x true :y true} {} (+ 125 316.654))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 64 -45 25) (three/Euler.) {:x true :y true} {} (+ 250 316.654))]
+                          :clap-time 0
+                          :spawner (spawner/assemble (three/Vector3. -40 0 25) (three/Vector3. 4 2 0))}
                          {:center (three/Vector3.)
-                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 94 32 0) (three/Euler. 0 0 (/ js/Math.PI 2)) {:x true :y true} {} 316.654)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 31 -11 0) (three/Euler. 0 0 (/ js/Math.PI 2)) {:x true :y true} {} (+ 125 316.654))
-                                  (wall/assemble-moveable-wall game (three/Vector3. 20 3 20) (three/Vector3. 64 -45 0) (three/Euler.) {:x true :y true} {} (+ 250 316.654))]
-                          :spawner (spawner/assemble (three/Vector3. -40 0 0) (three/Vector3. 4 2 0))}
-                         {:center (three/Vector3.)
-                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. -104 0 0) (three/Euler.) {:x true :y true} {} 816.634)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. -156 55 0) (three/Euler. 0 0 (/ js/Math.PI 4)) {:x true :y true} {} 816.634)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. -144 -22 0) (three/Euler. 0 0 (/ js/Math.PI 5)) {:x true :y true :z true} {} 816.634)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 20 0 0) (three/Euler. 0 0  (/ js/Math.PI -12)) {:x true :y true} {} 816.634)]
-                          :spawner (spawner/assemble (three/Vector3. 40 40 0) (three/Vector3. -2 3 0))}
-                         {:center (three/Vector3.)
-                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 0 0 0) (three/Euler. 0 0 (/ js/Math.PI 6)) {} {} 816.634)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. -84 26 0) (three/Euler. 0 0 (/ js/Math.PI -4)) {:x true :y true} {} 816.634)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. -95 88 0) (three/Euler. 0 0 (/ js/Math.PI -6)) {:x true :y true} {} 816.634)
-                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. -155 49) (three/Euler.) {:x true :y true} {} 816.634)]
-                          :spawner (spawner/assemble (three/Vector3. 0 100 0) (three/Vector3. 0 -5 0))}
-                         ;; {:center (three/Vector3.)
-                         ;;  :walls [(wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 20 0 0) (three/Euler. 0 0 (/ js/Math.PI 6)) {:x true :y true} {} 816.634)
-                         ;;          (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 60 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 500))
-                         ;;          (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 100 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1000))
-                         ;;          (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 140 0 0) (three/Euler.) {:x true :y true} {} (+ 816.634 1500))]
-                         ;;  :spawner (spawner/assemble (three/Vector3. 0 0 0) (three/Vector3. 0 5 0))}
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 0 0 50) (three/Euler. 0 0 (/ js/Math.PI -6)) {} {} 166.66)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 84 26 50) (three/Euler. 0 0 (/ js/Math.PI 4)) {:x true :y true} {} (+ 250 166.66))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 95 88 50) (three/Euler. 0 0 (/ js/Math.PI 6)) {:x true :y true} {} (+ 500 166.66))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 10 2 10) (three/Vector3. 155 49 50) (three/Euler.) {:x true :y true} {} (+ 750 166.66))]
+                          :clap-time 0
+                          :spawner (spawner/assemble (three/Vector3. 0 100 50) (three/Vector3. 0 -5 0))}
+                         {:clap-point (three/Vector3.)
+                          :walls [(wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 104 0 75) (three/Euler.) {} {} 716.638)
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 156 55 75) (three/Euler. 0 0 (/ js/Math.PI -4)) {:x true :y true} {} (+ 375 716.638))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 144 -22 75) (three/Euler. 0 0 (/ js/Math.PI -5)) {:x true :y true} {} (+ 750 716.638))
+                                  (wall/assemble-moveable-wall game (three/Vector3. 20 2 20) (three/Vector3. 20 0 75) (three/Euler. 0 0  (/ js/Math.PI 12)) {:x true :y true} {} (+ 1125 716.638))]
+                          :clap-time (+ 500 316.654)
+                          :spawner (spawner/assemble (three/Vector3. -40 40 75) (three/Vector3. 2 3 0))}
                          ]
                 :hits []
                 :modified-during-this-measure false}}))
