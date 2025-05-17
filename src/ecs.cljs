@@ -24,6 +24,7 @@
                  :physics-engine (.with world "physics-engine")
                  :renderer (.with world "renderer")
                  :backingtrack (.with world "backingtrack")
+                 :rhythmlevel (.with world "rhythmlevel")
                  ;; regular queries
                  :ball (.with world "ball")
                  :hitmarker (.with world "hitmarker")

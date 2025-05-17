@@ -1,14 +1,14 @@
 (ns main
   (:require
-   ["three" :as three]
    [backingtrack :as backingtrack]
    [common :as common]
    [ecs :as ecs]
-   [ball :as ball]
    [input :as input]
    [midi :as midi]
    [physics :as physics]
+   [pianotrack :as pianotrack]
    [renderer :as renderer]
+   [rhythmlevel :as rhythmlevel]
    [timerbar :as timerbar]
    [wall :as wall]))
 
@@ -21,11 +21,12 @@
   (let [delta (- time last-time)]
     (set! accumulator (+ accumulator delta))
     (when (> accumulator timestep-ms)
-      (backingtrack/play game time)
+      ;; (backingtrack/play game time)
       (set! accumulator (mod accumulator timestep-ms))
       (renderer/resize-to-display-size game)
       (wall/apply-relative-transform game)
       (physics/step-physics game)
+      (rhythmlevel/handle-playback game delta)
       (timerbar/update-timerbar-entity game timestep-ms)
       (timerbar/handle-solution-skip game)
       (timerbar/handle-responsive-svg game)
@@ -40,11 +41,12 @@
   (-> common/intro-container .-classList (.add "intro--fade-out"))
   (let [midi (js-await (midi/assemble))]
     (.add (:world game) midi))
-  (.add (:world game) (backingtrack/assemble))
   (.add (:world game) (input/assemble))
   (.add (:world game) (physics/assemble))
   (.add (:world game) (renderer/assemble))
   (.add (:world game) (timerbar/assemble game))
+  (.add (:world game) (backingtrack/assemble pianotrack/data 0 5))
+  (.add (:world game) (rhythmlevel/assemble))
   (timerbar/setup-level game 0)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
 
