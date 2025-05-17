@@ -52,11 +52,24 @@
 	  background-color: white;
 	  z-index: 69420;
       }
+      .fade-overlay {
+	  position: absolute;
+	  bottom: 0;
+	  left: 0;
+	  right: 0;
+	  height: 100px;
+	  background-color: white;
+	  opacity: 0.5;
+      }
+      svg {
+	  z-index: 999;
+      }
     </style>
   </head>
   <body>
     <div id="app">
       <canvas id="canvas"></canvas>
+      <div class="fade-overlay"></div>
       <svg
 	xmlns:svg="http://www.w3.org/2000/svg"
 	xmlns="http://www.w3.org/2000/svg"

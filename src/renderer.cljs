@@ -16,7 +16,16 @@
                 0.1
                 1000)
         transform-controls (TransformControls. camera js/document.body)
-        orbit-controls (OrbitControls. camera js/document.body)]
+        orbit-controls (OrbitControls. camera js/document.body)
+        loader (three/TextureLoader.)]
+    (.load
+     loader
+     "/empty_play_room_1k.jpg"
+     (fn [texture]
+       (set! (.-mapping texture) (.-EquirectangularReflectionMapping three))
+       (set! (.-colorSpace texture) (.-SRGBColorSpace three))
+       (set! (.-background scene) texture)))
+
     (set! (.. renderer -shadowMap -enabled) true)
     (set! (.-background scene) (three/Color. 0xbfd1e5))
 
@@ -27,6 +36,10 @@
     (.add scene (.getHelper transform-controls))
 
     (aset orbit-controls :enableDamping true)
+    (println orbit-controls)
+    ;; TODO: for later
+    ;; (aset orbit-controls :minAzimuthAngle -0.3)
+    ;; (aset orbit-controls :maxAzimuthAngle 0.3)
 
     (let [ambient-light (three/HemisphereLight. 0x555555 0xffffff)]
       (.add scene ambient-light))
@@ -73,4 +86,5 @@
         orbit-controls (:orbit-controls renderer-entity)]
     (aset orbit-controls :enableRotate (not (aget transform-controls :dragging)))
     (.update orbit-controls)
+    ;; (aset (-> camera .-rotation) :x 0)
     (.render renderer scene camera)))

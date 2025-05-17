@@ -27,8 +27,8 @@
 
 (def ^:export physics-to-mesh-scaling-factor 100)
 
-(def timing-padding-px 100)
-(def timing-bottom-y 100)
+(def timing-padding-px 50)
+(def timing-bottom-y 50)
 
 (defn ^:export timing-y []
   (- (.-innerHeight js/window)

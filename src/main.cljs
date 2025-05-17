@@ -27,6 +27,8 @@
       (wall/apply-relative-transform game)
       (physics/step-physics game)
       (timerbar/update-timerbar-entity game timestep-ms)
+      (timerbar/handle-solution-skip game)
+      (timerbar/handle-responsive-svg game)
       (physics/sync-mesh-to-physics game)
       (wall/handle-object-selection game)
       (wall/handle-collision game)

@@ -10,7 +10,7 @@
   (let* [physics (ecs/get-single-component game :physics-engine)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
          geometry (three/SphereGeometry. ball-radius 16 8)
-         material (three/MeshStandardMaterial. {:color 0x00ff00})
+         material (three/MeshStandardMaterial. {:color 0xffffff})
          mesh (three/Mesh. geometry material)
          rigid-body-desc (-> (.dynamic rapier/RigidBodyDesc)
                              (.setTranslation (:x position)
@@ -25,6 +25,8 @@
                            (.setRestitution 0.8)
                            (.setRestitutionCombineRule rapier/CoefficientCombineRule.Max))
          _collider (.createCollider (:world physics) collider-desc rigid-body)]
+    ;; TODO: for the second part
+    ;; (.add mesh (three/LineLoop. (three/CircleGeometry. 0.1 32) (three/LineBasicMaterial. {:color 0xffffff, :linewidth 2})))
     (.setEnabled rigid-body false)
     (set! (.-castShadow mesh) true)
     {:mesh mesh
