@@ -1,11 +1,12 @@
 (ns main
   (:require
    ["three" :as three]
-   [audio :as audio]
+   [backingtrack :as backingtrack]
    [common :as common]
    [ecs :as ecs]
    [ball :as ball]
    [input :as input]
+   [midi :as midi]
    [physics :as physics]
    [renderer :as renderer]
    [timerbar :as timerbar]
@@ -20,6 +21,7 @@
   (let [delta (- time last-time)]
     (set! accumulator (+ accumulator delta))
     (when (> accumulator timestep-ms)
+      (backingtrack/play game time)
       (set! accumulator (mod accumulator timestep-ms))
       (renderer/resize-to-display-size game)
       (wall/apply-relative-transform game)
@@ -34,8 +36,9 @@
 
 (defn ^:async start []
   (-> common/intro-container .-classList (.add "intro--fade-out"))
-  (let [audio (js-await (audio/assemble))]
-    (.add (:world game) audio))
+  (let [midi (js-await (midi/assemble))]
+    (.add (:world game) midi))
+  (.add (:world game) (backingtrack/assemble))
   (.add (:world game) (input/assemble))
   (.add (:world game) (physics/assemble))
   (.add (:world game) (renderer/assemble))

@@ -19,10 +19,11 @@
 (defn ^:export make []
   (let [world (miniplex/World.)
         queries {;; singleton queries
-                 :audio (.with world "audio")
                  :input (.with world "input")
+                 :midi (.with world "midi")
                  :physics-engine (.with world "physics-engine")
                  :renderer (.with world "renderer")
+                 :backingtrack (.with world "backingtrack")
                  ;; regular queries
                  :ball (.with world "ball")
                  :hitmarker (.with world "hitmarker")

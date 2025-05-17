@@ -2,11 +2,11 @@
   (:require
    ["@dimforge/rapier3d" :as rapier]
    ["three" :as three]
-   [audio :as audio]
    [common :as common]
    [ecs :as ecs]
    [hitmarker :as hitmarker]
-   [input :as input]))
+   [input :as input]
+   [midi :as midi]))
 
 (defn ^:export handle-collision [game]
   (let [timerbar-entity (ecs/get-single game :timerbar)]
@@ -17,7 +17,7 @@
             last-colliding (:lastcolliding user-data)
             just-collided (and colliding (not last-colliding))]
         (when just-collided
-          (audio/playsound game)
+          (midi/playsound game 0 13 69 127)
           (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position common/p)}))
           (when (:timed-requirement e)
             (.add (:world game) (hitmarker/assemble timerbar-entity))))))))
