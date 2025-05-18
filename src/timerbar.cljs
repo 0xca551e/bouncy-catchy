@@ -184,4 +184,5 @@
         (.remove (:world game) b))
       ;; spawn new marbles
       (spawner/spawn game (-> timerbar :levels (nth (:current-level timerbar)) :spawner)))
-    (.setAttribute svg "cx" (common/timing-to-x position duration))))
+    (.setAttribute svg "cx" (common/timing-to-x position duration))
+    (.setAttribute svg "cy" (common/timing-y))))
