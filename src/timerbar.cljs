@@ -58,16 +58,16 @@
                           :spawner (spawner/assemble (correction 1 (three/Vector3. -40 0 25)) (three/Vector3. 4 2 0))}
                          {:center (three/Vector3.)
                           :walls [(wall/assemble-moveable-wall game "#ff0025" (three/Vector3. 20 2 20) (correction 2 (three/Vector3. 0 0 50)) (three/Euler. 0 0 (/ js/Math.PI -6)) {} {} 166.66 66)
-                                  (wall/assemble-moveable-wall game "#0062ff" (three/Vector3. 20 2 20) (correction 2 (three/Vector3. 84 26 50)) (three/Euler. 0 0 (/ js/Math.PI 4)) {:x true :y true} {} (+ 250 166.66) 67)
-                                  (wall/assemble-moveable-wall game "#18ff00" (three/Vector3. 20 2 20) (correction 2 (three/Vector3. 95 88 50)) (three/Euler. 0 0 (/ js/Math.PI 6)) {:x true :y true} {} (+ 500 166.66) 75)
+                                  (wall/assemble-moveable-wall game "#0062ff" (three/Vector3. 20 2 20) (correction 2 (three/Vector3. 64 26 50)) (three/Euler. 0 0 (/ js/Math.PI 4)) {:x true :y true} {} (+ 250 166.66) 67)
+                                  (wall/assemble-moveable-wall game "#18ff00" (three/Vector3. 20 2 20) (correction 2 (three/Vector3. 65 88 50)) (three/Euler. 0 0 (/ js/Math.PI 6)) {:x true :y true} {} (+ 500 166.66) 75)
                                   (wall/assemble-moveable-wall game "#fff600" (three/Vector3. 10 2 10) (correction 2 (three/Vector3. 155 49 50)) (three/Euler.) {:x true :y true} {} (+ 750 166.66) 72)]
                           :clap-time 0
                           :spawner (spawner/assemble (correction 2 (three/Vector3. 0 100 50)) (three/Vector3. 0 -5 0))}
                          {:clap-point (three/Vector3.)
                           :walls [(wall/assemble-moveable-wall game "#ff0025" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 104 0 75)) (three/Euler.) {} {} 716.638 67)
-                                  (wall/assemble-moveable-wall game "#0062ff" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 156 55 75)) (three/Euler. 0 0 (/ js/Math.PI -4)) {:x true :y true} {} (+ 375 716.638) 75)
-                                  (wall/assemble-moveable-wall game "#18ff00" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 144 -22 75)) (three/Euler. 0 0 (/ js/Math.PI -5)) {:x true :y true} {} (+ 750 716.638) 63)
-                                  (wall/assemble-moveable-wall game "#fff600" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 20 0 75)) (three/Euler. 0 0  (/ js/Math.PI 12)) {:x true :y true} {} (+ 1125 716.638) 60)]
+                                  (wall/assemble-moveable-wall game "#0062ff" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 146 55 75)) (three/Euler. 0 0 (/ js/Math.PI -4)) {:x true :y true} {} (+ 375 716.638) 75)
+                                  (wall/assemble-moveable-wall game "#18ff00" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 164 -22 75)) (three/Euler. 0 0 (/ js/Math.PI -5)) {:x true :y true} {} (+ 750 716.638) 63)
+                                  (wall/assemble-moveable-wall game "#fff600" (three/Vector3. 20 2 20) (correction 3 (three/Vector3. 180 0 75)) (three/Euler. 0 0  (/ js/Math.PI 12)) {:x true :y true} {} (+ 1125 716.638) 60)]
                           :clap-time (+ 500 316.654)
                           :spawner (spawner/assemble (correction 3 (three/Vector3. -40 40 75)) (three/Vector3. 2 3 0))}]
                 :hits []
@@ -76,8 +76,9 @@
 (defn ^:export handle-responsive-svg [game]
   (let [e (ecs/get-single-component game :timerbar)]
     (doseq [wall (-> e :levels (nth (:current-level e)) :walls)]
-      (.setAttribute (:svg wall) "cx" (common/timing-to-x (:timed-requirement wall) (:duration e)))
-      (.setAttribute (:svg wall) "cy" (common/timing-y)))))
+      (when (:svg wall)
+        (.setAttribute (:svg wall) "cx" (common/timing-to-x (:timed-requirement wall) (:duration e)))
+        (.setAttribute (:svg wall) "cy" (common/timing-y))))))
 
 (defn ^:export setup-level [game level-index]
   (let [e (ecs/get-single-component game :timerbar)]
@@ -91,14 +92,33 @@
   (let [timerbar (ecs/get-single-component game :timerbar)
         prev-level-index (:current-level timerbar)]
     (if (= prev-level-index (- (.-length (:levels timerbar)) 1))
-      (println "building part done. TODO handle logic to do the rhythm part")
       (do
-      ;; remove level interaction components for previous level
-        (doseq [wall (-> timerbar :levels (nth prev-level-index) :walls)]
-          (.removeComponent (:world game) wall "svg")
-          (.removeComponent (:world game) wall "controllable")
-          (.removeComponent (:world game) wall "timed-requirement"))
-        (setup-level game (+ prev-level-index 1))))))
+        (println "building part done. TODO handle logic to do the rhythm part")
+      ; copy pasted from do-solution-skip!!!
+        (let* [in (ecs/get-single-component game :input)
+               timerbar (ecs/get-single-component game :timerbar)
+               current-level (:current-level timerbar)
+               solve (nth solutions current-level)]
+              (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
+                (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
+                (-> wall :mesh .-material .-color (.setHex (case current-level
+                                                             0 0xff9999
+                                                             1 0xffff99
+                                                             2 0x99ff99
+                                                             3 0x9999ff)))
+
+        ;; remove level interaction components for previous level
+                )
+              ;(advance-level game)
+              ))
+      (do
+        ;; remove level interaction components for previous level
+
+        (setup-level game (+ prev-level-index 1))))
+    (doseq [wall (-> timerbar :levels (nth prev-level-index) :walls)]
+      (.removeComponent (:world game) wall "svg")
+      (.removeComponent (:world game) wall "controllable")
+      (.removeComponent (:world game) wall "timed-requirement"))))
 (defn do-solution-skip [game]
   (let* [in (ecs/get-single-component game :input)
          timerbar (ecs/get-single-component game :timerbar)

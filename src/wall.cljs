@@ -45,15 +45,16 @@
       (when (and controllable (.-dragging control))
         (aset timerbar :modified-during-this-measure true))
       (when (and controllable (not (.-dragging control)))
-        (cond
-          (and (:translate controllable) (input/just-key-pressed input "g"))
-          (set! (.-current controllable) "translate")
+        (comment
+          (cond
+            (and (:translate controllable) (input/just-key-pressed input "g"))
+            (set! (.-current controllable) "translate")
 
-          (and (:rotate controllable) (input/just-key-pressed input "r"))
-          (set! (.-current controllable) "rotate")
+            (and (:rotate controllable) (input/just-key-pressed input "r"))
+            (set! (.-current controllable) "rotate")
 
-          (input/just-key-pressed input "f")
-          (aset orbit-control :target (-> control .-object .-userData .-entity :mesh .-position .clone)))
+            (input/just-key-pressed input "f")
+            (aset orbit-control :target (-> control .-object .-userData .-entity :mesh .-position .clone))))
         (.setMode control (.-current controllable))
         (set! (.-showX control) (js/Boolean (-> controllable (get (.-current controllable)) :x)))
         (set! (.-showY control) (js/Boolean (-> controllable (get (.-current controllable)) :y)))
