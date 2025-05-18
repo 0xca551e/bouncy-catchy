@@ -43,7 +43,7 @@
          :ball-target true}))
 
 (defn ^:export assemble-targets [game]
-  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 0) 0xff9999))
-  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 25) 0xffff99))
-  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 50) 0x99ff99))
-  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 75) 0x9999ff)))
+  (.add (:world game) (assemble-target (three/Vector3. 0 0 0) 0xff9999))
+  (.add (:world game) (assemble-target (three/Vector3. 0 0 25) 0xffff99))
+  (.add (:world game) (assemble-target (three/Vector3. 0 0 50) 0x99ff99))
+  (.add (:world game) (assemble-target (three/Vector3. 0 0 75) 0x9999ff)))

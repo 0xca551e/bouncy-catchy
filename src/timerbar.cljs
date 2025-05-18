@@ -180,8 +180,8 @@
       (doseq [hitmarker-entity (-> game :queries :hitmarker)]
         (.remove (:world game) hitmarker-entity))
       ;; despawn old marbles
-      (doseq [ball (-> game :queries :ball)]
-        (.remove (:world game) ball))
+      (doseq [b (-> game :queries :ball)]
+        (.remove (:world game) b))
       ;; spawn new marbles
       (spawner/spawn game (-> timerbar :levels (nth (:current-level timerbar)) :spawner)))
     (.setAttribute svg "cx" (common/timing-to-x position duration))))

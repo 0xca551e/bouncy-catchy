@@ -4,9 +4,9 @@
 
 (defn ^:async ^:export assemble []
   (let* [context (js/AudioContext.)
-         soundfont (js-await (js/fetch "/GeneralUserGS.sf3"))
+         soundfont (js-await (js/fetch "GeneralUserGS.sf3"))
          soundfont-buffer (js-await (.arrayBuffer soundfont))
-         _ (js-await (-> context .-audioWorklet (.addModule "/worklet_processor.min.js")))
+         _ (js-await (-> context .-audioWorklet (.addModule "worklet_processor.min.js")))
          synth (spessasynth/Synthetizer. (.-destination context) soundfont-buffer)
          _ (js-await (.-isReady synth))]
     ;; (js-await (.resume context))

@@ -6,6 +6,6 @@
   {:spawner {:location location :velocity velocity}})
 
 (defn ^:export spawn [game spawner-entity color]
-  (let [ball (ball/assemble game (-> spawner-entity :spawner :location) (-> spawner-entity :spawner :velocity) color)]
-    (.add (:world game) ball)
-    ball))
+  (let [b (ball/assemble game (-> spawner-entity :spawner :location) (-> spawner-entity :spawner :velocity) color)]
+    (.add (:world game) b)
+    b))

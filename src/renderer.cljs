@@ -21,7 +21,7 @@
         loader (three/TextureLoader.)]
     (.load
      loader
-     "/empty_play_room_1k.jpg"
+     "empty_play_room_1k.jpg"
      (fn [texture]
        (set! (.-mapping texture) (.-EquirectangularReflectionMapping three))
        (set! (.-colorSpace texture) (.-SRGBColorSpace three))
