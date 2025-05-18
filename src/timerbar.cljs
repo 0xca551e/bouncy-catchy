@@ -25,17 +25,6 @@
                  (three/Vector3. 156.3 -36.47 75)
                  (three/Vector3. 278.25 -66.51 75)]])
 
-(defn ^:export handle-solution-skip [game]
-  (let* [in (ecs/get-single-component game :input)
-         timerbar (ecs/get-single-component game :timerbar)
-         current-level (:current-level timerbar)
-         solve (nth solutions current-level)]
-        (when (input/just-key-pressed in "p")
-          (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
-            (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
-        ;; (-> wall :physics .-position (.copy (three/Vector3. 20 0 0)))
-            ))))
-
 (defn ^:export assemble [game]
   (let [timing-bar-hud-element (.createElementNS js/document "http://www.w3.org/2000/svg" "circle")]
     (.setAttribute timing-bar-hud-element "r" 5)
@@ -90,6 +79,7 @@
       (.add (:world game) wall))
     (doseq [relative-wall (-> e :levels (nth level-index) :relative-walls)]
       (.add (:world game) relative-wall))))
+
 (defn advance-level [game]
   (let [timerbar (ecs/get-single-component game :timerbar)
         prev-level-index (:current-level timerbar)]
@@ -133,7 +123,20 @@
         (.remove (:world game) hitmarker-entity))
       ;; despawn old marbles
       (doseq [ball (-> game :queries :ball)]
-        (.remove (:world game) ball))
+        ;(.remove (:world game) ball)
+        )
       ;; spawn new marbles
-      (spawner/spawn game (-> timerbar :levels (nth (:current-level timerbar)) :spawner)))
+      ;(spawner/spawn game (-> timerbar :levels (nth (:current-level timerbar)) :spawner))
+      )
     (.setAttribute svg "cx" (common/timing-to-x position duration))))
+(defn ^:export handle-solution-skip [game]
+  (let* [in (ecs/get-single-component game :input)
+         timerbar (ecs/get-single-component game :timerbar)
+         current-level (:current-level timerbar)
+         solve (nth solutions current-level)]
+        (when (input/just-key-pressed in "p")
+          (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
+            (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
+        ;; (-> wall :physics .-position (.copy (three/Vector3. 20 0 0)))
+            )
+          (advance-level game))))

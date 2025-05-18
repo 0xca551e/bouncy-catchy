@@ -2,6 +2,7 @@
   (:require
    [backingtrack :as backingtrack]
    [common :as common]
+   [drumtrack]
    [ecs :as ecs]
    [input :as input]
    [midi :as midi]
@@ -48,6 +49,7 @@
   (.add (:world game) (renderer/assemble))
   (.add (:world game) (timerbar/assemble game))
   (.add (:world game) (backingtrack/assemble pianotrack/data 0 5))
+  (.add (:world game) (backingtrack/assemble drumtrack/data 120 0))
   (.add (:world game) (rhythmlevel/assemble))
   (timerbar/setup-level game 0)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
