@@ -25,6 +25,7 @@
                  :renderer (.with world "renderer")
                  :backingtrack (.with world "backingtrack")
                  :rhythmlevel (.with world "rhythmlevel")
+                 :tutoriallevel (.with world "tutoriallevel")
                  ;; regular queries
                  :ball (.with world "ball")
                  :hitmarker (.with world "hitmarker")
