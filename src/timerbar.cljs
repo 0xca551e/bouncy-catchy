@@ -1,9 +1,11 @@
 (ns timerbar
   (:require
    ["three" :as three]
+   [ball :as ball]
    [common :as common]
    [ecs :as ecs]
    [input :as input]
+   [renderer :as renderer]
    [spawner :as spawner]
    [wall :as wall]))
 
@@ -40,7 +42,8 @@
     (.setAttribute timing-bar-hud-element "fill" "white")
     (.setAttribute timing-bar-hud-element "stroke" "black")
     {:svg timing-bar-hud-element
-     :timerbar {:position 0
+     :timerbar {:active true
+                :position 0
                 :duration 3000
                 :current-level -1
                 :levels [{:clap-point (three/Vector3.)
@@ -94,7 +97,7 @@
     (if (= prev-level-index (- (.-length (:levels timerbar)) 1))
       (do
         (println "building part done. TODO handle logic to do the rhythm part")
-      ; copy pasted from do-solution-skip!!!
+        ; copy pasted from do-solution-skip!!!
         (let* [in (ecs/get-single-component game :input)
                timerbar (ecs/get-single-component game :timerbar)
                current-level (:current-level timerbar)
@@ -107,10 +110,20 @@
                                                              2 0x99ff99
                                                              3 0x9999ff)))
 
-        ;; remove level interaction components for previous level
+            ;; remove level interaction components for previous level
                 )
-              ;(advance-level game)
-              ))
+                                        ;(advance-level game)
+              )
+        ; "remove" the timerbar now
+        (aset timerbar :active false)
+        (-> js/document (.querySelector "svg") .-style (aset :display "none"))
+        (-> js/document (.querySelector ".fade-overlay") .-style (aset :display "none"))
+        (js/alert "Good! The instrument is complete.\nLet's practice using it.\nPress space when the note hits the target circle!\nYou will hear a clap if you time it right. If you miss, you'll hear a record scratch.")
+        (-> (ecs/get-single-component game :tutoriallevel) (aset :playing true))
+        (renderer/lock-camera game)
+        (renderer/reset-camera-to-reasonable-position game)
+        (ball/assemble-targets game)
+        )
       (do
         ;; remove level interaction components for previous level
 
@@ -123,17 +136,21 @@
   (let* [in (ecs/get-single-component game :input)
          timerbar (ecs/get-single-component game :timerbar)
          current-level (:current-level timerbar)
-         solve (nth solutions current-level)]
-        (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
-          (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
-          (-> wall :mesh .-material .-color (.setHex (case current-level
-                                                       0 0xff9999
-                                                       1 0xffff99
-                                                       2 0x99ff99
-                                                       3 0x9999ff))))
+         solve (nth solutions current-level)
+         renderer (ecs/get-single-component game :renderer)]
+    ; detach controls
+    (-> renderer :transform-controls (.detach))
+    (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
+      (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
+      (-> wall :mesh .-material .-color (.setHex (case current-level
+                                                   0 0xff9999
+                                                   1 0xffff99
+                                                   2 0x99ff99
+                                                   3 0x9999ff))))
         (advance-level game)))
 (defn ^:export handle-solution-skip [game]
-  (when (input/just-key-pressed (ecs/get-single-component game :input) "p")
+  (when (and (input/just-key-pressed (ecs/get-single-component game :input) "p")
+             (:active (ecs/get-single-component game :timerbar)))
     (do-solution-skip game)))
 (defn ^:export update-timerbar-entity [game delta]
   (let [e (ecs/get-single game :timerbar)
@@ -142,7 +159,7 @@
         position (.-position timerbar)
         duration (.-duration timerbar)]
     (set! (aget timerbar :position) (+ position delta))
-    (when (> position duration)
+    (when (and (:active timerbar) (> position duration))
       (set! (.-position timerbar) 0)
       ;; verify hits and set up next level on success
       (when (let [pairs (vec (map vector (:hits timerbar) (-> timerbar :levels (nth (:current-level timerbar)) :walls)))]

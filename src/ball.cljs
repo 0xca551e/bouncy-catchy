@@ -6,7 +6,7 @@
    [ecs :as ecs]))
 
 (def ball-radius 0.012)
-(defn ^:export assemble [game position velocity]
+(defn ^:export assemble [game position velocity color]
   (let* [physics (ecs/get-single-component game :physics-engine)
          position (.divideScalar (.clone position) common/physics-to-mesh-scaling-factor)
          geometry (three/SphereGeometry. ball-radius 16 8)
@@ -25,8 +25,8 @@
                            (.setRestitution 0.8)
                            (.setRestitutionCombineRule rapier/CoefficientCombineRule.Max))
          _collider (.createCollider (:world physics) collider-desc rigid-body)]
-    ;; TODO: for the second part
-        (.add mesh (three/LineLoop. (three/CircleGeometry. 0.1 32) (three/LineBasicMaterial. {:color 0xffffff, :linewidth 2})))
+        (when color
+          (.add mesh (three/LineLoop. (three/CircleGeometry. 0.1 32) (three/LineBasicMaterial. {:color color, :linewidth 2}))))
         (.setEnabled rigid-body false)
         (set! (.-castShadow mesh) true)
         {:mesh mesh
@@ -40,7 +40,7 @@
     (-> mesh .-position (.copy position))
     (set! (.-castShadow mesh) true)
         {:mesh mesh
-         :ball true}))
+         :ball-target true}))
 
 (defn ^:export assemble-targets [game]
   (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 0) 0xff9999))

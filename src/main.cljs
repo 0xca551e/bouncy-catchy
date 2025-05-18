@@ -37,8 +37,8 @@
       (timerbar/update-timerbar-entity game timestep-ms)
       (timerbar/handle-solution-skip game)
       (timerbar/handle-responsive-svg game)
-      (physics/sync-mesh-to-physics game)
       (wall/handle-object-selection game)
+      (physics/sync-mesh-to-physics game)
       (wall/handle-collision game)
       (renderer/handle-reset-camera-to-reasonable-position game)
       (renderer/render game)
@@ -59,6 +59,7 @@
   (.add (:world game) (rhythmlevel/assemble))
 
   (timerbar/setup-level game 0)
-  (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
+  (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame)
+  (js/alert "Hello! You will be making a musical instrument powered by bouncy balls.\nYou'll need to align the panels such that the bouncing balls hit them at the correct time.\nLeft click on a panel to select and drag it.\nRight click to pan the camera.\nThe mouse wheel can be used to zoom the camera.\nIf you ever get lost, press `z` to reset the camera.\nIf you ever get stuck, you can press `p` to automatically solve a section."))
 
 (.addEventListener common/start-button "click" start {:once true})

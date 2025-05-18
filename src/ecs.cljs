@@ -4,6 +4,12 @@
    ["miniplex" :as miniplex]
    [common :as common]))
 
+(defn ^:export has-single [ecs query-name]
+  (let [query (-> ecs :queries (get query-name))
+        length (-> query .-entities .-length)
+        query-is-single (= length 1)]
+    query-is-single))
+
 (defn ^:export get-single [ecs query-name]
   (let [query (-> ecs :queries (get query-name))
         length (-> query .-entities .-length)

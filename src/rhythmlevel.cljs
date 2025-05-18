@@ -1,14 +1,17 @@
 (ns rhythmlevel
   (:require
    [backingtrack :as backingtrack]
+   [ball :as ball]
    [ecs :as ecs]
    [input :as input]
    [midi :as midi]
    [spawner :as spawner]))
 
-(def good-timing-window-ms 50)
-(def ok-timing-window-ms 100)
+(def good-timing-window-ms 33)
+(def ok-timing-window-ms 66)
 (def bad-timing-window-ms 200)
+
+(def ball-colors [0xff3333 0xffff33 0x33ff33 0x3333ff])
 
 (def spawner-cues [{:time 4000, :spawner 0}
                    {:time 8000, :spawner 0}
@@ -53,7 +56,7 @@
                    {:time 74500, :spawner 1}
                    {:time 75000, :spawner 1}
                    {:time 75500, :spawner 1}
-                                ;; just to prevent overflow for now
+                   ;; just to prevent overflow for now
                    {:time js/Infinity :spawner 0}])
 
 (defn ^:export assemble []
@@ -67,7 +70,13 @@
                                                                   1 (+ (:time x) 500)
                                                                   2 (+ (:time x) 1000)
                                                                   3 (+ (:time x) 1500)))))
-                 :current-clap 0}})
+                 :current-clap 0
+                 :active-balls []}})
+
+(defn kill-oldest-ball [game e]
+  (when (nth (:active-balls e) 0)
+    (.remove (:world game) (nth (:active-balls e) 0))
+    (.shift (:active-balls e))))
 
 (defn ^:export handle-timing-misses [game]
   (let* [e (ecs/get-single-component game :rhythmlevel)
@@ -75,12 +84,13 @@
          current-clap (:current-clap e)
          current-clap-time (-> e :clap-times (nth (:current-clap e)))
          timing-difference (- current-clap-time current-time)]
-        (cond
-          (<= timing-difference (- bad-timing-window-ms))
-          (do
-            (println "missed")
-            (midi/playsound game 120 0 30 127)
-            (aset e :current-clap (+ current-clap 1))))))
+    (cond
+      (<= timing-difference (- bad-timing-window-ms))
+      (do
+        (println "missed")
+        (midi/playsound game 120 0 30 127)
+        (aset e :current-clap (+ current-clap 1))
+        (kill-oldest-ball game e)))))
 
 (defn ^:export handle-timing-input [game]
   (let* [in (ecs/get-single-component game :input)
@@ -96,19 +106,22 @@
             (do
               (println "good")
               (midi/playsound game 120 0 39 127)
-              (aset e :current-clap (+ current-clap 1)))
+              (aset e :current-clap (+ current-clap 1))
+              (kill-oldest-ball game e))
 
             (<= timing-offset ok-timing-window-ms)
             (do
               (println "ok")
               (midi/playsound game 120 0 39 127)
-              (aset e :current-clap (+ current-clap 1)))
+              (aset e :current-clap (+ current-clap 1))
+              (kill-oldest-ball game e))
 
             (<= timing-offset bad-timing-window-ms)
             (do
               (println "bad")
               (midi/playsound game 120 0 30 127)
-              (aset e :current-clap (+ current-clap 1)))))))
+              (aset e :current-clap (+ current-clap 1))
+              (kill-oldest-ball game e))))))
 
 (defn ^:export handle-playback [game delta]
   (let [e (ecs/get-single-component game :rhythmlevel)
@@ -120,8 +133,8 @@
       (when (>= (:time e) (- (:time current-spawner-cue) (nth (:calibration e) (:spawner current-spawner-cue))))
         (let* [timerbar (ecs/get-single-component game :timerbar)
                s (-> timerbar :levels (nth (:spawner current-spawner-cue)) :spawner)]
-              (aset e :current-spawner-cue (+ (:current-spawner-cue e) 1))
-              (spawner/spawn game s)))
+              (.push (:active-balls e) (spawner/spawn game s (nth ball-colors (:spawner current-spawner-cue))))
+              (aset e :current-spawner-cue (+ (:current-spawner-cue e) 1))))
       ;; play the midi events
       (doseq [backing-track (-> game :queries :backingtrack)]
         (backingtrack/play game backing-track (:time e))))))

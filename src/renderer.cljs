@@ -89,16 +89,30 @@
     ;; (aset (-> camera .-rotation) :x 0)
     (.render renderer scene camera)))
 
-(def reasonable-camera-position (three/Vector3. 7.509209830947526 114.35783395540642 236.268626920854))
+(def reasonable-camera-position (three/Vector3. 7.509209830947526 134.35783395540642 226.268626920854))
 
 (def reasonable-camera-rotation (three/Euler. -0.5593518013037831 0.4265059573765538 0.2534225183136857 "XYZ"))
 
-(defn ^:export handle-reset-camera-to-reasonable-position [game]
-  (let [in (ecs/get-single-component game :input)
-        renderer (ecs/get-single-component game :renderer)
+(defn ^:export lock-camera [game]
+  (let [renderer (ecs/get-single-component game :renderer)
+        controls (:orbit-controls renderer)]
+    (.reset controls)
+    (aset controls :enablePan false)
+    (aset controls :enableRotate false)
+    ; i said stop rotating!!!
+    (aset controls :mouseButtons { :LEFT nil :MIDDLE nil :RIGHT nil })
+    (aset controls :enableZoom false)))
+
+(defn ^:export reset-camera-to-reasonable-position [game]
+  (let [renderer (ecs/get-single-component game :renderer)
         controls (:orbit-controls renderer)
         camera (:camera renderer)]
+    (.reset controls)
+    (-> camera .-position (.copy reasonable-camera-position))
+    (-> camera .-rotation (.copy reasonable-camera-rotation))
+    (-> camera (aset :zoom 1))))
+
+(defn ^:export handle-reset-camera-to-reasonable-position [game]
+  (let [in (ecs/get-single-component game :input)]
     (when (input/just-key-pressed in "z")
-      (.reset controls)
-      (-> camera .-position (.copy reasonable-camera-position))
-      (-> camera .-rotation (.copy reasonable-camera-rotation)))))
+      (reset-camera-to-reasonable-position game))))
