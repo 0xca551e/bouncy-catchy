@@ -19,7 +19,7 @@
             instrument-pitch (:instrument e)]
         (when just-collided
           (midi/playsound game 0 13 instrument-pitch 127)
-          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position common/p)}))
+          (-> timerbar-entity :timerbar :hits (.push {:wall e :time (-> timerbar-entity :timerbar :position)}))
           (when (:timed-requirement e)
             (.add (:world game) (hitmarker/assemble timerbar-entity))))))))
 
@@ -39,7 +39,7 @@
              first-hit (nth intersects 0)
              controllable (some-> first-hit .-object .-userData .-entity .-controllable)]
             (if (and first-hit controllable)
-              (.attach control (-> first-hit .-object common/p))
+              (.attach control (-> first-hit .-object))
               (.detach control))))
     (let [controllable (some-> control .-object .-userData .-entity .-controllable)]
       (when (and controllable (.-dragging control))

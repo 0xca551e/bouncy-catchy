@@ -12,8 +12,6 @@
     ;; (js-await (.resume context))
     ;; (.programChange synth 0 48)
     ;; (.noteOn synth 0 52 127)
-    (println synth)
-        (println (.-midiAudioChannels synth))
         {:midi {:context context
                 :synth synth}}))
 

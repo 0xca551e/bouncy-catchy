@@ -7,7 +7,7 @@
    [spawner :as spawner]
    [wall :as wall]))
 
-(def timing-error-margin-ms 33)
+(def timing-error-margin-ms 84)
 
 (def hit-zone-corrections [(three/Vector3. 121.154 -35.461 0)
                            (three/Vector3. 129.766 -4.684 0)
@@ -97,9 +97,24 @@
         (doseq [wall (-> timerbar :levels (nth prev-level-index) :walls)]
           (.removeComponent (:world game) wall "svg")
           (.removeComponent (:world game) wall "controllable")
-          (.removeComponent (:world game) wall "timed-requirement")
-          (-> wall :mesh .-material .-color (.setHex 0xffffff)))
+          (.removeComponent (:world game) wall "timed-requirement"))
         (setup-level game (+ prev-level-index 1))))))
+(defn do-solution-skip [game]
+  (let* [in (ecs/get-single-component game :input)
+         timerbar (ecs/get-single-component game :timerbar)
+         current-level (:current-level timerbar)
+         solve (nth solutions current-level)]
+        (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
+          (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
+          (-> wall :mesh .-material .-color (.setHex (case current-level
+                                                       0 0xff9999
+                                                       1 0xffff99
+                                                       2 0x99ff99
+                                                       3 0x9999ff))))
+        (advance-level game)))
+(defn ^:export handle-solution-skip [game]
+  (when (input/just-key-pressed (ecs/get-single-component game :input) "p")
+    (do-solution-skip game)))
 (defn ^:export update-timerbar-entity [game delta]
   (let [e (ecs/get-single game :timerbar)
         svg (.-svg e)
@@ -112,7 +127,6 @@
       ;; verify hits and set up next level on success
       (when (let [pairs (vec (map vector (:hits timerbar) (-> timerbar :levels (nth (:current-level timerbar)) :walls)))]
               (and
-                  ;; TODO: check if the marble has been caught
                (not (:modified-during-this-measure timerbar))
                (= (.-length (:hits timerbar)) (.-length (-> timerbar :levels (nth (:current-level timerbar)) :walls)))
                (every? (fn [[hit wall]]
@@ -121,7 +135,7 @@
                                                  (:timed-requirement wall)))
                                  timing-error-margin-ms)))
                        pairs)))
-        (advance-level game))
+        (do-solution-skip game))
       ;; reset hit verification
       (set! (.-length (:hits timerbar)) 0)
       (aset timerbar :modified-during-this-measure false)
@@ -130,20 +144,7 @@
         (.remove (:world game) hitmarker-entity))
       ;; despawn old marbles
       (doseq [ball (-> game :queries :ball)]
-        ;(.remove (:world game) ball)
-        )
+        (.remove (:world game) ball))
       ;; spawn new marbles
-      ;(spawner/spawn game (-> timerbar :levels (nth (:current-level timerbar)) :spawner))
-      )
+      (spawner/spawn game (-> timerbar :levels (nth (:current-level timerbar)) :spawner)))
     (.setAttribute svg "cx" (common/timing-to-x position duration))))
-(defn ^:export handle-solution-skip [game]
-  (let* [in (ecs/get-single-component game :input)
-         timerbar (ecs/get-single-component game :timerbar)
-         current-level (:current-level timerbar)
-         solve (nth solutions current-level)]
-        (when (input/just-key-pressed in "p")
-          (doseq [[i wall] (map-indexed vector (-> timerbar :levels (nth current-level) :walls))]
-            (-> wall :physics (.setTranslation (-> (nth solve i) (.clone) (.divideScalar common/physics-to-mesh-scaling-factor))))
-        ;; (-> wall :physics .-position (.copy (three/Vector3. 20 0 0)))
-            )
-          (advance-level game))))

@@ -37,7 +37,6 @@
     (.add scene (.getHelper transform-controls))
 
     ;; (aset orbit-controls :enableDamping true)
-    (println orbit-controls)
     ;; TODO: for later
     ;; (aset orbit-controls :minAzimuthAngle -0.3)
     ;; (aset orbit-controls :maxAzimuthAngle 0.3)

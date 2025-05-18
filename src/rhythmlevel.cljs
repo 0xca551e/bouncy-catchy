@@ -57,7 +57,7 @@
                    {:time js/Infinity :spawner 0}])
 
 (defn ^:export assemble []
-  {:rhythmlevel {:playing true
+  {:rhythmlevel {:playing false
                  :time 0
                  :calibration [(+ 816.634) (+ 316.654) (+ 166.66) (+ 716.638)]
                  :spawner-cues spawner-cues
