@@ -2,7 +2,7 @@
   (:require
    [backingtrack :as backingtrack]
    [common :as common]
-   [drumtrack]
+   [drumtrack :as drumtrack]
    [ecs :as ecs]
    [input :as input]
    [midi :as midi]
@@ -11,7 +11,7 @@
    [renderer :as renderer]
    [rhythmlevel :as rhythmlevel]
    [timerbar :as timerbar]
-   [tutoriallevel]
+   [tutoriallevel :as tutoriallevel]
    [wall :as wall]))
 
 (def game (ecs/make))

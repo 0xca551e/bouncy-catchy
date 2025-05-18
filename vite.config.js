@@ -5,5 +5,10 @@ import wasm from "vite-plugin-wasm";
 export default defineConfig({
     plugins: [
 	wasm()
-    ]
+    ],
+    esbuild: {
+	supported: {
+	    'top-level-await': true
+	},
+    }
 });
