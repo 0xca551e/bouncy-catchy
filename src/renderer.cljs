@@ -4,7 +4,8 @@
    ["three/examples/jsm/controls/OrbitControls" :refer [OrbitControls]]
    ["three/examples/jsm/controls/TransformControls" :refer [TransformControls]]
    [common :as common]
-   [ecs :as ecs]))
+   [ecs :as ecs]
+   [input :as input]))
 
 (defn ^:export assemble []
   (let [renderer (three/WebGLRenderer. {:canvas common/canvas})
@@ -35,7 +36,7 @@
 
     (.add scene (.getHelper transform-controls))
 
-    (aset orbit-controls :enableDamping true)
+    ;; (aset orbit-controls :enableDamping true)
     (println orbit-controls)
     ;; TODO: for later
     ;; (aset orbit-controls :minAzimuthAngle -0.3)
@@ -85,6 +86,20 @@
         transform-controls (:transform-controls renderer-entity)
         orbit-controls (:orbit-controls renderer-entity)]
     (aset orbit-controls :enableRotate (not (aget transform-controls :dragging)))
-    (.update orbit-controls)
+    ;; (.update orbit-controls)
     ;; (aset (-> camera .-rotation) :x 0)
     (.render renderer scene camera)))
+
+(def reasonable-camera-position (three/Vector3. 7.509209830947526 114.35783395540642 236.268626920854))
+
+(def reasonable-camera-rotation (three/Euler. -0.5593518013037831 0.4265059573765538 0.2534225183136857 "XYZ"))
+
+(defn ^:export handle-reset-camera-to-reasonable-position [game]
+  (let [in (ecs/get-single-component game :input)
+        renderer (ecs/get-single-component game :renderer)
+        controls (:orbit-controls renderer)
+        camera (:camera renderer)]
+    (when (input/just-key-pressed in "z")
+      (.reset controls)
+      (-> camera .-position (.copy reasonable-camera-position))
+      (-> camera .-rotation (.copy reasonable-camera-rotation)))))

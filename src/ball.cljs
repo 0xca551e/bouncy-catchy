@@ -33,16 +33,17 @@
          :physics rigid-body
          :ball true}))
 
-(defn ^:export assemble-target [game position]
-  (let* [physics (ecs/get-single-component game :physics-engine)
-         geometry (three/CircleGeometry. 10 32)
-         material (three/LineBasicMaterial. {:color 0xff0000, :linewidth 2})
-         mesh (three/LineLoop. geometry material)
-         ]
-    ;; TODO: for the second part
+(defn ^:export assemble-target [position color]
+  (let* [geometry (three/CircleGeometry. 10 32)
+         material (three/LineBasicMaterial. {:color color, :linewidth 2})
+         mesh (three/LineLoop. geometry material)]
     (-> mesh .-position (.copy position))
-    ;; (.setEnabled rigid-body false)
     (set! (.-castShadow mesh) true)
         {:mesh mesh
-         ;; :physics rigid-body
          :ball true}))
+
+(defn ^:export assemble-targets [game]
+  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 0) 0xff9999))
+  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 25) 0xffff99))
+  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 50) 0x99ff99))
+  (.add (:world game) (ball/assemble-target (three/Vector3. 0 0 75) 0x9999ff)))

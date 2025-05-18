@@ -24,10 +24,9 @@
   (let [delta (- time last-time)]
     (set! accumulator (+ accumulator delta))
     (when (> accumulator timestep-ms)
-      ;; (backingtrack/play game time)
       (set! accumulator (mod accumulator timestep-ms))
       (renderer/resize-to-display-size game)
-      (wall/apply-relative-transform game)
+      ;; (wall/apply-relative-transform game)
       (physics/step-physics game)
       (rhythmlevel/handle-playback game timestep-ms)
       (rhythmlevel/handle-timing-misses game)
@@ -38,6 +37,7 @@
       (physics/sync-mesh-to-physics game)
       (wall/handle-object-selection game)
       (wall/handle-collision game)
+      (renderer/handle-reset-camera-to-reasonable-position game)
       (renderer/render game)
       (input/post-update game)))
   (set! last-time time))
@@ -53,11 +53,6 @@
   (.add (:world game) (backingtrack/assemble pianotrack/data 0 5))
   (.add (:world game) (backingtrack/assemble drumtrack/data 120 0))
   (.add (:world game) (rhythmlevel/assemble))
-
-  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 0)))
-  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 25)))
-  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 50)))
-  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 75)))
 
   (timerbar/setup-level game 0)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
