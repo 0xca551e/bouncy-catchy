@@ -66,11 +66,12 @@
                  :spawner-cues spawner-cues
                  :current-spawner-cue 0
                  :clap-times (->> spawner-cues (map (fn [x] (case (:spawner x)
-                                                                  0 (+ (:time x) 2000)
-                                                                  1 (+ (:time x) 500)
-                                                                  2 (+ (:time x) 1000)
-                                                                  3 (+ (:time x) 1500)))))
+                                                              0 (+ (:time x) 2000)
+                                                              1 (+ (:time x) 500)
+                                                              2 (+ (:time x) 1000)
+                                                              3 (+ (:time x) 1500)))))
                  :current-clap 0
+                 :hits 0
                  :active-balls []}})
 
 (defn kill-oldest-ball [game e]
@@ -84,13 +85,13 @@
          current-clap (:current-clap e)
          current-clap-time (-> e :clap-times (nth (:current-clap e)))
          timing-difference (- current-clap-time current-time)]
-    (cond
-      (<= timing-difference (- bad-timing-window-ms))
-      (do
-        (println "missed")
-        (midi/playsound game 120 0 30 127)
-        (aset e :current-clap (+ current-clap 1))
-        (kill-oldest-ball game e)))))
+        (cond
+          (<= timing-difference (- bad-timing-window-ms))
+          (do
+            (println "missed")
+            (midi/playsound game 120 0 30 127)
+            (aset e :current-clap (+ current-clap 1))
+            (kill-oldest-ball game e)))))
 
 (defn ^:export handle-timing-input [game]
   (let* [in (ecs/get-single-component game :input)
@@ -107,14 +108,16 @@
               (println "good")
               (midi/playsound game 120 0 39 127)
               (aset e :current-clap (+ current-clap 1))
-              (kill-oldest-ball game e))
+              (kill-oldest-ball game e)
+              (aset e :hits (+ (:hits e) 1)))
 
             (<= timing-offset ok-timing-window-ms)
             (do
               (println "ok")
               (midi/playsound game 120 0 39 127)
               (aset e :current-clap (+ current-clap 1))
-              (kill-oldest-ball game e))
+              (kill-oldest-ball game e)
+              (aset e :hits (+ (:hits e) 1)))
 
             (<= timing-offset bad-timing-window-ms)
             (do
@@ -128,6 +131,9 @@
         playing (:playing e)
         current-spawner-cue (-> e :spawner-cues (nth (:current-spawner-cue e)))]
     (when playing
+      (when (>= (:time e) 90000)
+        (aset e :playing false)
+        (js/alert (.join ["You have caught " (:hits e) " out of " (- (.-length spawner-cues) 1) " balls!\n" (cond (= (:hits e) 43) "Perfect!\n" (>= (:hits e) 38) "Well done!\n" (>= (:hits e) 33) "Not bad!\n" :else "") "If you would like to try again, refresh the page and skip the building by pressing `p` 4 times.\nThanks for playing!"] "")))
       (aset e :time (+ (:time e) delta))
       ;; handle spawner cues
       (when (>= (:time e) (- (:time current-spawner-cue) (nth (:calibration e) (:spawner current-spawner-cue))))
