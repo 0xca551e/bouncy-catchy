@@ -26,9 +26,23 @@
                            (.setRestitutionCombineRule rapier/CoefficientCombineRule.Max))
          _collider (.createCollider (:world physics) collider-desc rigid-body)]
     ;; TODO: for the second part
-    ;; (.add mesh (three/LineLoop. (three/CircleGeometry. 0.1 32) (three/LineBasicMaterial. {:color 0xffffff, :linewidth 2})))
-    (.setEnabled rigid-body false)
+        (.add mesh (three/LineLoop. (three/CircleGeometry. 0.1 32) (three/LineBasicMaterial. {:color 0xffffff, :linewidth 2})))
+        (.setEnabled rigid-body false)
+        (set! (.-castShadow mesh) true)
+        {:mesh mesh
+         :physics rigid-body
+         :ball true}))
+
+(defn ^:export assemble-target [game position]
+  (let* [physics (ecs/get-single-component game :physics-engine)
+         geometry (three/CircleGeometry. 10 32)
+         material (three/LineBasicMaterial. {:color 0xff0000, :linewidth 2})
+         mesh (three/LineLoop. geometry material)
+         ]
+    ;; TODO: for the second part
+    (-> mesh .-position (.copy position))
+    ;; (.setEnabled rigid-body false)
     (set! (.-castShadow mesh) true)
-    {:mesh mesh
-     :physics rigid-body
-     :ball true}))
+        {:mesh mesh
+         ;; :physics rigid-body
+         :ball true}))

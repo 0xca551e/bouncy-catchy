@@ -10,11 +10,11 @@
   (let [renderer (three/WebGLRenderer. {:canvas common/canvas})
         scene (three/Scene.)
         camera (three/PerspectiveCamera.
-                75
+                60
                 (/ (.-innerWidth js/window)
                    (.-innerHeight js/window))
                 0.1
-                1000)
+                5000)
         transform-controls (TransformControls. camera js/document.body)
         orbit-controls (OrbitControls. camera js/document.body)
         loader (three/TextureLoader.)]

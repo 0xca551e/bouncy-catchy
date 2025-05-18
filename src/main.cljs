@@ -1,6 +1,8 @@
 (ns main
   (:require
+   ["three" :as three]
    [backingtrack :as backingtrack]
+   [ball :as ball]
    [common :as common]
    [drumtrack]
    [ecs :as ecs]
@@ -51,6 +53,12 @@
   (.add (:world game) (backingtrack/assemble pianotrack/data 0 5))
   (.add (:world game) (backingtrack/assemble drumtrack/data 120 0))
   (.add (:world game) (rhythmlevel/assemble))
+
+  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 0)))
+  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 25)))
+  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 50)))
+  (.add (:world game) (ball/assemble-target game (three/Vector3. 0 0 75)))
+
   (timerbar/setup-level game 0)
   (.setAnimationLoop (-> (ecs/get-single-component game :renderer) :renderer) animation-frame))
 
