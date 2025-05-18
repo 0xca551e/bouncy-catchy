@@ -75,7 +75,6 @@
          current-clap (:current-clap e)
          current-clap-time (-> e :clap-times (nth (:current-clap e)))
          timing-difference (- current-clap-time current-time)]
-        (println current-time)
         (cond
           (<= timing-difference (- bad-timing-window-ms))
           (do
