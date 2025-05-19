@@ -11,10 +11,10 @@
 
 (def timing-error-margin-ms 84)
 
-(def hit-zone-corrections [(three/Vector3. 121.154 -35.461 0)
-                           (three/Vector3. 129.766 -4.684 0)
-                           (three/Vector3. 131.348 81.981 0)
-                           (three/Vector3. 347.838 -16.594 0)])
+(def hit-zone-corrections [(three/Vector3. 118.65462411 -19.57292759 0)
+                           (three/Vector3. 118.79514765 -2.48418514 0)
+                           (three/Vector3. 128.77535661 81.57970841 0)
+                           (three/Vector3. 339.66947798 -13.85941059 0)])
 
 (defn correction [n v]
   (-> v (.clone) (.sub (nth hit-zone-corrections n))))
