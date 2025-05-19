@@ -96,7 +96,6 @@
         prev-level-index (:current-level timerbar)]
     (if (= prev-level-index (- (.-length (:levels timerbar)) 1))
       (do
-        (println "building part done. TODO handle logic to do the rhythm part")
         ; copy pasted from do-solution-skip!!!
         (let* [in (ecs/get-single-component game :input)
                timerbar (ecs/get-single-component game :timerbar)
