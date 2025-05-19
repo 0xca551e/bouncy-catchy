@@ -68,11 +68,11 @@
  {:on true, :note 42, :velocity 64, :time 11000.0}
  {:on false, :note 38, :velocity 0, :time 11248.958333333334}
  {:on false, :note 42, :velocity 0, :time 11248.958333333334}
- {:on true, :note 50, :velocity 64, :time 11250.0}
- {:on false, :note 50, :velocity 0, :time 11498.958333333334}
+ {:on true, :note 47, :velocity 64, :time 11250.0}
+ {:on false, :note 47, :velocity 0, :time 11498.958333333334}
  {:on true, :note 42, :velocity 64, :time 11500.0}
- {:on true, :note 47, :velocity 64, :time 11500.0}
- {:on false, :note 47, :velocity 0, :time 11748.958333333334}
+ {:on true, :note 41, :velocity 64, :time 11500.0}
+ {:on false, :note 41, :velocity 0, :time 11748.958333333334}
  {:on false, :note 42, :velocity 0, :time 11998.958333333334}
  {:on true, :note 57, :velocity 64, :time 12000.0}
  {:on true, :note 35, :velocity 64, :time 12000.0}
@@ -128,11 +128,11 @@
  {:on true, :note 42, :velocity 64, :time 19000.0}
  {:on false, :note 38, :velocity 0, :time 19248.958333333336}
  {:on false, :note 42, :velocity 0, :time 19248.958333333336}
- {:on true, :note 50, :velocity 64, :time 19250.0}
- {:on false, :note 50, :velocity 0, :time 19498.958333333336}
+ {:on true, :note 47, :velocity 64, :time 19250.0}
+ {:on false, :note 47, :velocity 0, :time 19498.958333333336}
  {:on true, :note 42, :velocity 64, :time 19500.0}
- {:on true, :note 47, :velocity 64, :time 19500.0}
- {:on false, :note 47, :velocity 0, :time 19748.958333333336}
+ {:on true, :note 41, :velocity 64, :time 19500.0}
+ {:on false, :note 41, :velocity 0, :time 19748.958333333336}
  {:on false, :note 42, :velocity 0, :time 19998.958333333336}
  {:on true, :note 57, :velocity 64, :time 20000.0}
  {:on true, :note 35, :velocity 64, :time 20000.0}
@@ -180,11 +180,9 @@
  {:on true, :note 35, :velocity 64, :time 26000.000000000004}
  {:on false, :note 42, :velocity 0, :time 26498.958333333336}
  {:on false, :note 35, :velocity 0, :time 26498.958333333336}
- {:on true, :note 38, :velocity 64, :time 26500.000000000004}
+ {:on true, :note 42, :velocity 64, :time 26500.000000000004}
  {:on true, :note 35, :velocity 64, :time 26500.000000000004}
- {:on false, :note 38, :velocity 0, :time 26748.958333333336}
  {:on false, :note 35, :velocity 0, :time 26748.958333333336}
- {:on true, :note 42, :velocity 64, :time 26750.000000000004}
  {:on true, :note 38, :velocity 64, :time 26750.000000000004}
  {:on false, :note 42, :velocity 0, :time 26998.958333333336}
  {:on false, :note 38, :velocity 0, :time 26998.958333333336}
@@ -194,10 +192,8 @@
  {:on false, :note 50, :velocity 0, :time 27248.958333333336}
  {:on true, :note 47, :velocity 64, :time 27250.000000000004}
  {:on false, :note 47, :velocity 0, :time 27498.958333333336}
- {:on true, :note 38, :velocity 64, :time 27500.000000000004}
  {:on true, :note 42, :velocity 64, :time 27500.000000000004}
  {:on true, :note 41, :velocity 64, :time 27500.000000000004}
- {:on false, :note 38, :velocity 0, :time 27998.958333333336}
  {:on false, :note 42, :velocity 0, :time 27998.958333333336}
  {:on false, :note 41, :velocity 0, :time 27998.958333333336}
  {:on true, :note 57, :velocity 64, :time 28000.000000000004}
@@ -226,13 +222,13 @@
  {:on false, :note 35, :velocity 0, :time 30998.958333333336}
  {:on true, :note 38, :velocity 64, :time 31000.000000000004}
  {:on true, :note 42, :velocity 64, :time 31000.000000000004}
- {:on true, :note 50, :velocity 64, :time 31250.000000000004}
- {:on false, :note 38, :velocity 0, :time 31498.958333333336}
- {:on false, :note 42, :velocity 0, :time 31498.958333333336}
- {:on false, :note 50, :velocity 0, :time 31498.958333333336}
+ {:on false, :note 38, :velocity 0, :time 31248.958333333336}
+ {:on false, :note 42, :velocity 0, :time 31248.958333333336}
+ {:on true, :note 47, :velocity 64, :time 31250.000000000004}
+ {:on false, :note 47, :velocity 0, :time 31498.958333333336}
  {:on true, :note 42, :velocity 64, :time 31500.000000000004}
- {:on true, :note 47, :velocity 64, :time 31500.000000000004}
- {:on false, :note 47, :velocity 0, :time 31748.958333333336}
+ {:on true, :note 41, :velocity 64, :time 31500.000000000004}
+ {:on false, :note 41, :velocity 0, :time 31748.958333333336}
  {:on false, :note 42, :velocity 0, :time 31998.958333333336}
  {:on true, :note 46, :velocity 64, :time 32000.000000000004}
  {:on true, :note 35, :velocity 64, :time 32000.000000000004}
@@ -334,9 +330,11 @@
  {:on true, :note 47, :velocity 64, :time 43250.0}
  {:on false, :note 42, :velocity 0, :time 43498.958333333336}
  {:on false, :note 47, :velocity 0, :time 43498.958333333336}
+ {:on true, :note 42, :velocity 64, :time 43500.0}
  {:on true, :note 41, :velocity 64, :time 43500.0}
  {:on false, :note 41, :velocity 0, :time 43748.958333333336}
  {:on true, :note 35, :velocity 64, :time 43750.0}
+ {:on false, :note 42, :velocity 0, :time 43998.958333333336}
  {:on false, :note 35, :velocity 0, :time 43998.958333333336}
  {:on true, :note 49, :velocity 64, :time 44000.0}
  {:on true, :note 50, :velocity 64, :time 44000.0}
@@ -365,56 +363,70 @@
  {:on false, :note 42, :velocity 0, :time 46498.958333333336}
  {:on true, :note 46, :velocity 64, :time 46500.0}
  {:on false, :note 35, :velocity 0, :time 46748.958333333336}
+ {:on false, :note 46, :velocity 0, :time 46748.958333333336}
+ {:on true, :note 44, :velocity 64, :time 46750.0}
  {:on true, :note 35, :velocity 64, :time 46750.0}
- {:on false, :note 46, :velocity 0, :time 46998.958333333336}
+ {:on false, :note 44, :velocity 0, :time 46998.958333333336}
  {:on false, :note 35, :velocity 0, :time 46998.958333333336}
- {:on true, :note 42, :velocity 64, :time 47000.0}
  {:on true, :note 38, :velocity 64, :time 47000.0}
  {:on false, :note 38, :velocity 0, :time 47123.958333333336}
  {:on true, :note 38, :velocity 64, :time 47125.0}
- {:on false, :note 42, :velocity 0, :time 47248.958333333336}
  {:on false, :note 38, :velocity 0, :time 47248.958333333336}
- {:on true, :note 42, :velocity 64, :time 47250.0}
  {:on true, :note 50, :velocity 64, :time 47250.0}
  {:on false, :note 50, :velocity 0, :time 47498.958333333336}
  {:on true, :note 47, :velocity 64, :time 47500.0}
- {:on false, :note 42, :velocity 0, :time 47748.958333333336}
+ {:on true, :note 46, :velocity 64, :time 47500.0}
  {:on false, :note 47, :velocity 0, :time 47748.958333333336}
- {:on true, :note 42, :velocity 64, :time 47750.0}
+ {:on false, :note 46, :velocity 0, :time 47748.958333333336}
  {:on true, :note 41, :velocity 64, :time 47750.0}
- {:on false, :note 42, :velocity 0, :time 47998.958333333336}
+ {:on true, :note 44, :velocity 64, :time 47750.0}
  {:on false, :note 41, :velocity 0, :time 47998.958333333336}
- {:on true, :note 57, :velocity 64, :time 48000.0}
+ {:on false, :note 44, :velocity 0, :time 47998.958333333336}
+ {:on true, :note 49, :velocity 64, :time 48000.0}
  {:on true, :note 35, :velocity 64, :time 48000.0}
- {:on false, :note 35, :velocity 0, :time 48373.958333333336}
- {:on true, :note 35, :velocity 64, :time 48375.0}
- {:on false, :note 57, :velocity 0, :time 48498.958333333336}
+ {:on false, :note 35, :velocity 0, :time 48248.958333333336}
+ {:on true, :note 47, :velocity 64, :time 48250.0}
+ {:on false, :note 49, :velocity 0, :time 48498.958333333336}
+ {:on false, :note 47, :velocity 0, :time 48498.958333333336}
  {:on true, :note 42, :velocity 64, :time 48500.0}
- {:on false, :note 35, :velocity 0, :time 48748.958333333336}
+ {:on true, :note 41, :velocity 64, :time 48500.0}
+ {:on false, :note 41, :velocity 0, :time 48748.958333333336}
  {:on true, :note 35, :velocity 64, :time 48750.0}
  {:on false, :note 42, :velocity 0, :time 48998.958333333336}
  {:on false, :note 35, :velocity 0, :time 48998.958333333336}
+ {:on true, :note 46, :velocity 64, :time 49000.0}
  {:on true, :note 38, :velocity 64, :time 49000.0}
- {:on true, :note 42, :velocity 64, :time 49000.0}
+ {:on false, :note 46, :velocity 0, :time 49248.958333333336}
  {:on false, :note 38, :velocity 0, :time 49248.958333333336}
- {:on false, :note 42, :velocity 0, :time 49248.958333333336}
- {:on true, :note 42, :velocity 64, :time 49500.0}
+ {:on true, :note 44, :velocity 64, :time 49250.0}
+ {:on false, :note 44, :velocity 0, :time 49498.958333333336}
  {:on true, :note 38, :velocity 64, :time 49500.0}
  {:on false, :note 38, :velocity 0, :time 49748.958333333336}
+ {:on true, :note 42, :velocity 64, :time 49750.0}
+ {:on true, :note 38, :velocity 64, :time 49750.0}
  {:on false, :note 42, :velocity 0, :time 49998.958333333336}
+ {:on false, :note 38, :velocity 0, :time 49998.958333333336}
  {:on true, :note 38, :velocity 64, :time 50000.0}
+ {:on true, :note 42, :velocity 64, :time 50000.0}
  {:on true, :note 35, :velocity 64, :time 50000.0}
  {:on false, :note 38, :velocity 0, :time 50248.958333333336}
+ {:on false, :note 42, :velocity 0, :time 50248.958333333336}
  {:on true, :note 38, :velocity 64, :time 50250.0}
+ {:on true, :note 42, :velocity 64, :time 50250.0}
  {:on false, :note 35, :velocity 0, :time 50373.958333333336}
  {:on true, :note 35, :velocity 64, :time 50375.0}
  {:on false, :note 38, :velocity 0, :time 50498.958333333336}
+ {:on false, :note 42, :velocity 0, :time 50498.958333333336}
  {:on true, :note 38, :velocity 64, :time 50500.0}
+ {:on true, :note 42, :velocity 64, :time 50500.0}
  {:on false, :note 35, :velocity 0, :time 50748.958333333336}
  {:on false, :note 38, :velocity 0, :time 50748.958333333336}
+ {:on false, :note 42, :velocity 0, :time 50748.958333333336}
  {:on true, :note 38, :velocity 64, :time 50750.0}
+ {:on true, :note 42, :velocity 64, :time 50750.0}
  {:on true, :note 35, :velocity 64, :time 50750.0}
  {:on false, :note 38, :velocity 0, :time 50998.958333333336}
+ {:on false, :note 42, :velocity 0, :time 50998.958333333336}
  {:on true, :note 50, :velocity 64, :time 51000.0}
  {:on false, :note 35, :velocity 0, :time 51123.958333333336}
  {:on false, :note 50, :velocity 0, :time 51123.958333333336}
@@ -440,19 +452,15 @@
  {:on true, :note 42, :velocity 64, :time 53000.00000000001}
  {:on false, :note 38, :velocity 0, :time 53248.958333333336}
  {:on false, :note 42, :velocity 0, :time 53248.958333333336}
- {:on true, :note 47, :velocity 64, :time 53250.00000000001}
- {:on true, :note 41, :velocity 64, :time 53500.00000000001}
+ {:on true, :note 41, :velocity 64, :time 53250.00000000001}
  {:on true, :note 38, :velocity 64, :time 53500.00000000001}
  {:on true, :note 42, :velocity 64, :time 53500.00000000001}
- {:on false, :note 47, :velocity 0, :time 53623.958333333336}
- {:on false, :note 41, :velocity 0, :time 53748.958333333336}
+ {:on false, :note 41, :velocity 0, :time 53623.958333333336}
  {:on false, :note 38, :velocity 0, :time 53748.958333333336}
  {:on false, :note 42, :velocity 0, :time 53748.958333333336}
- {:on true, :note 42, :velocity 64, :time 53750.00000000001}
  {:on true, :note 38, :velocity 64, :time 53750.00000000001}
  {:on false, :note 38, :velocity 0, :time 53873.958333333336}
  {:on true, :note 38, :velocity 64, :time 53875.00000000001}
- {:on false, :note 42, :velocity 0, :time 53998.958333333336}
  {:on false, :note 38, :velocity 0, :time 53998.958333333336}
  {:on true, :note 42, :velocity 64, :time 54000.00000000001}
  {:on true, :note 35, :velocity 64, :time 54000.00000000001}
@@ -466,13 +474,13 @@
  {:on false, :note 35, :velocity 0, :time 54998.958333333336}
  {:on true, :note 38, :velocity 64, :time 55000.00000000001}
  {:on true, :note 42, :velocity 64, :time 55000.00000000001}
- {:on true, :note 50, :velocity 64, :time 55250.00000000001}
+ {:on true, :note 47, :velocity 64, :time 55250.00000000001}
  {:on false, :note 38, :velocity 0, :time 55498.958333333336}
  {:on false, :note 42, :velocity 0, :time 55498.958333333336}
- {:on false, :note 50, :velocity 0, :time 55498.958333333336}
+ {:on false, :note 47, :velocity 0, :time 55498.958333333336}
  {:on true, :note 42, :velocity 64, :time 55500.00000000001}
- {:on true, :note 47, :velocity 64, :time 55500.00000000001}
- {:on false, :note 47, :velocity 0, :time 55748.958333333336}
+ {:on true, :note 41, :velocity 64, :time 55500.00000000001}
+ {:on false, :note 41, :velocity 0, :time 55748.958333333336}
  {:on false, :note 42, :velocity 0, :time 55998.958333333336}
  {:on true, :note 57, :velocity 64, :time 56000.00000000001}
  {:on true, :note 35, :velocity 64, :time 56000.00000000001}
@@ -488,24 +496,26 @@
  {:on true, :note 42, :velocity 64, :time 57000.00000000001}
  {:on false, :note 38, :velocity 0, :time 57248.958333333336}
  {:on false, :note 42, :velocity 0, :time 57248.958333333336}
- {:on true, :note 47, :velocity 64, :time 57250.00000000001}
+ {:on true, :note 41, :velocity 64, :time 57250.00000000001}
  {:on true, :note 38, :velocity 64, :time 57500.00000000001}
  {:on true, :note 42, :velocity 64, :time 57500.00000000001}
- {:on false, :note 47, :velocity 0, :time 57623.958333333336}
+ {:on false, :note 41, :velocity 0, :time 57623.958333333336}
  {:on false, :note 38, :velocity 0, :time 57748.958333333336}
  {:on false, :note 42, :velocity 0, :time 57748.958333333336}
- {:on true, :note 42, :velocity 64, :time 57750.00000000001}
  {:on true, :note 38, :velocity 64, :time 57750.00000000001}
  {:on false, :note 38, :velocity 0, :time 57873.958333333336}
  {:on true, :note 38, :velocity 64, :time 57875.00000000001}
- {:on false, :note 42, :velocity 0, :time 57998.958333333336}
  {:on false, :note 38, :velocity 0, :time 57998.958333333336}
+ {:on true, :note 42, :velocity 64, :time 58000.00000000001}
  {:on true, :note 35, :velocity 64, :time 58000.00000000001}
+ {:on false, :note 42, :velocity 0, :time 58248.958333333336}
  {:on true, :note 38, :velocity 64, :time 58250.00000000001}
  {:on false, :note 35, :velocity 0, :time 58373.958333333336}
  {:on true, :note 35, :velocity 64, :time 58375.00000000001}
  {:on false, :note 38, :velocity 0, :time 58498.958333333336}
+ {:on true, :note 42, :velocity 64, :time 58500.00000000001}
  {:on false, :note 35, :velocity 0, :time 58748.958333333336}
+ {:on false, :note 42, :velocity 0, :time 58748.958333333336}
  {:on true, :note 38, :velocity 64, :time 58750.00000000001}
  {:on true, :note 35, :velocity 64, :time 58750.00000000001}
  {:on false, :note 38, :velocity 0, :time 58998.958333333336}
@@ -534,19 +544,15 @@
  {:on true, :note 42, :velocity 64, :time 61000.00000000001}
  {:on false, :note 38, :velocity 0, :time 61248.958333333336}
  {:on false, :note 42, :velocity 0, :time 61248.958333333336}
- {:on true, :note 47, :velocity 64, :time 61250.00000000001}
- {:on true, :note 41, :velocity 64, :time 61500.00000000001}
+ {:on true, :note 41, :velocity 64, :time 61250.00000000001}
  {:on true, :note 38, :velocity 64, :time 61500.00000000001}
  {:on true, :note 42, :velocity 64, :time 61500.00000000001}
- {:on false, :note 47, :velocity 0, :time 61623.958333333336}
- {:on false, :note 41, :velocity 0, :time 61748.958333333336}
+ {:on false, :note 41, :velocity 0, :time 61623.958333333336}
  {:on false, :note 38, :velocity 0, :time 61748.958333333336}
  {:on false, :note 42, :velocity 0, :time 61748.958333333336}
- {:on true, :note 42, :velocity 64, :time 61750.00000000001}
  {:on true, :note 38, :velocity 64, :time 61750.00000000001}
  {:on false, :note 38, :velocity 0, :time 61873.958333333336}
  {:on true, :note 38, :velocity 64, :time 61875.00000000001}
- {:on false, :note 42, :velocity 0, :time 61998.958333333336}
  {:on false, :note 38, :velocity 0, :time 61998.958333333336}
  {:on true, :note 42, :velocity 64, :time 62000.00000000001}
  {:on true, :note 35, :velocity 64, :time 62000.00000000001}
@@ -560,13 +566,13 @@
  {:on false, :note 35, :velocity 0, :time 62998.958333333336}
  {:on true, :note 38, :velocity 64, :time 63000.00000000001}
  {:on true, :note 42, :velocity 64, :time 63000.00000000001}
- {:on true, :note 50, :velocity 64, :time 63250.00000000001}
+ {:on true, :note 47, :velocity 64, :time 63250.00000000001}
  {:on false, :note 38, :velocity 0, :time 63498.958333333336}
  {:on false, :note 42, :velocity 0, :time 63498.958333333336}
- {:on false, :note 50, :velocity 0, :time 63498.958333333336}
+ {:on false, :note 47, :velocity 0, :time 63498.958333333336}
  {:on true, :note 42, :velocity 64, :time 63500.00000000001}
- {:on true, :note 47, :velocity 64, :time 63500.00000000001}
- {:on false, :note 47, :velocity 0, :time 63748.958333333336}
+ {:on true, :note 41, :velocity 64, :time 63500.00000000001}
+ {:on false, :note 41, :velocity 0, :time 63748.958333333336}
  {:on false, :note 42, :velocity 0, :time 63998.958333333336}
  {:on true, :note 57, :velocity 64, :time 64000.00000000001}
  {:on true, :note 35, :velocity 64, :time 64000.00000000001}
@@ -582,26 +588,26 @@
  {:on true, :note 42, :velocity 64, :time 65000.00000000001}
  {:on false, :note 38, :velocity 0, :time 65248.958333333336}
  {:on false, :note 42, :velocity 0, :time 65248.958333333336}
- {:on true, :note 47, :velocity 64, :time 65250.00000000001}
- {:on true, :note 41, :velocity 64, :time 65500.00000000001}
+ {:on true, :note 41, :velocity 64, :time 65250.00000000001}
  {:on true, :note 38, :velocity 64, :time 65500.00000000001}
  {:on true, :note 42, :velocity 64, :time 65500.00000000001}
- {:on false, :note 47, :velocity 0, :time 65623.95833333334}
- {:on false, :note 41, :velocity 0, :time 65748.95833333334}
+ {:on false, :note 41, :velocity 0, :time 65623.95833333334}
  {:on false, :note 38, :velocity 0, :time 65748.95833333334}
  {:on false, :note 42, :velocity 0, :time 65748.95833333334}
- {:on true, :note 42, :velocity 64, :time 65750.0}
  {:on true, :note 38, :velocity 64, :time 65750.0}
  {:on false, :note 38, :velocity 0, :time 65873.95833333334}
  {:on true, :note 38, :velocity 64, :time 65875.0}
- {:on false, :note 42, :velocity 0, :time 65998.95833333334}
  {:on false, :note 38, :velocity 0, :time 65998.95833333334}
+ {:on true, :note 42, :velocity 64, :time 66000.0}
  {:on true, :note 35, :velocity 64, :time 66000.0}
+ {:on false, :note 42, :velocity 0, :time 66248.95833333334}
  {:on true, :note 38, :velocity 64, :time 66250.0}
  {:on false, :note 35, :velocity 0, :time 66373.95833333334}
  {:on true, :note 35, :velocity 64, :time 66375.0}
  {:on false, :note 38, :velocity 0, :time 66498.95833333334}
+ {:on true, :note 42, :velocity 64, :time 66500.0}
  {:on false, :note 35, :velocity 0, :time 66748.95833333334}
+ {:on false, :note 42, :velocity 0, :time 66748.95833333334}
  {:on true, :note 38, :velocity 64, :time 66750.0}
  {:on true, :note 35, :velocity 64, :time 66750.0}
  {:on false, :note 38, :velocity 0, :time 66998.95833333334}
@@ -623,34 +629,34 @@
  {:on false, :note 57, :velocity 0, :time 68498.95833333334}
  {:on true, :note 42, :velocity 64, :time 68500.0}
  {:on false, :note 35, :velocity 0, :time 68748.95833333334}
+ {:on false, :note 42, :velocity 0, :time 68748.95833333334}
  {:on true, :note 35, :velocity 64, :time 68750.0}
- {:on false, :note 42, :velocity 0, :time 68998.95833333334}
  {:on false, :note 35, :velocity 0, :time 68998.95833333334}
  {:on true, :note 38, :velocity 64, :time 69000.0}
- {:on true, :note 42, :velocity 64, :time 69000.0}
+ {:on false, :note 38, :velocity 0, :time 69123.95833333334}
+ {:on true, :note 38, :velocity 64, :time 69125.0}
  {:on false, :note 38, :velocity 0, :time 69248.95833333334}
- {:on false, :note 42, :velocity 0, :time 69248.95833333334}
- {:on true, :note 47, :velocity 64, :time 69250.0}
- {:on true, :note 38, :velocity 64, :time 69500.0}
+ {:on true, :note 41, :velocity 64, :time 69250.0}
+ {:on true, :note 47, :velocity 64, :time 69500.0}
  {:on true, :note 42, :velocity 64, :time 69500.0}
- {:on false, :note 47, :velocity 0, :time 69623.95833333334}
- {:on false, :note 38, :velocity 0, :time 69748.95833333334}
+ {:on false, :note 41, :velocity 0, :time 69623.95833333334}
+ {:on false, :note 47, :velocity 0, :time 69748.95833333334}
  {:on false, :note 42, :velocity 0, :time 69748.95833333334}
- {:on true, :note 42, :velocity 64, :time 69750.0}
- {:on true, :note 38, :velocity 64, :time 69750.0}
- {:on false, :note 38, :velocity 0, :time 69873.95833333334}
- {:on true, :note 38, :velocity 64, :time 69875.0}
- {:on false, :note 42, :velocity 0, :time 69998.95833333334}
- {:on false, :note 38, :velocity 0, :time 69998.95833333334}
+ {:on true, :note 41, :velocity 64, :time 69750.0}
+ {:on false, :note 41, :velocity 0, :time 69873.95833333334}
  {:on true, :note 42, :velocity 64, :time 70000.0}
  {:on true, :note 35, :velocity 64, :time 70000.0}
  {:on false, :note 35, :velocity 0, :time 70373.95833333334}
  {:on true, :note 35, :velocity 64, :time 70375.0}
  {:on false, :note 42, :velocity 0, :time 70498.95833333334}
- {:on true, :note 42, :velocity 64, :time 70500.0}
+ {:on true, :note 38, :velocity 64, :time 70500.0}
+ {:on false, :note 38, :velocity 0, :time 70623.95833333334}
+ {:on true, :note 38, :velocity 64, :time 70625.0}
  {:on false, :note 35, :velocity 0, :time 70748.95833333334}
+ {:on false, :note 38, :velocity 0, :time 70748.95833333334}
+ {:on true, :note 41, :velocity 64, :time 70750.0}
  {:on true, :note 35, :velocity 64, :time 70750.0}
- {:on false, :note 42, :velocity 0, :time 70998.95833333334}
+ {:on false, :note 41, :velocity 0, :time 70873.95833333334}
  {:on false, :note 35, :velocity 0, :time 70998.95833333334}
  {:on true, :note 38, :velocity 64, :time 71000.0}
  {:on true, :note 42, :velocity 64, :time 71000.0}
@@ -676,33 +682,37 @@
  {:on false, :note 35, :velocity 0, :time 72998.95833333334}
  {:on true, :note 38, :velocity 64, :time 73000.0}
  {:on true, :note 42, :velocity 64, :time 73000.0}
- {:on false, :note 38, :velocity 0, :time 73248.95833333334}
- {:on false, :note 42, :velocity 0, :time 73248.95833333334}
- {:on true, :note 47, :velocity 64, :time 73250.0}
- {:on true, :note 38, :velocity 64, :time 73500.0}
- {:on true, :note 42, :velocity 64, :time 73500.0}
- {:on false, :note 47, :velocity 0, :time 73623.95833333334}
- {:on false, :note 38, :velocity 0, :time 73748.95833333334}
- {:on false, :note 42, :velocity 0, :time 73748.95833333334}
- {:on true, :note 42, :velocity 64, :time 73750.0}
- {:on true, :note 38, :velocity 64, :time 73750.0}
- {:on false, :note 38, :velocity 0, :time 73873.95833333334}
- {:on true, :note 38, :velocity 64, :time 73875.0}
- {:on false, :note 42, :velocity 0, :time 73998.95833333334}
- {:on false, :note 38, :velocity 0, :time 73998.95833333334}
+ {:on false, :note 38, :velocity 0, :time 73123.95833333334}
+ {:on false, :note 42, :velocity 0, :time 73123.95833333334}
+ {:on true, :note 38, :velocity 64, :time 73250.0}
+ {:on false, :note 38, :velocity 0, :time 73373.95833333334}
+ {:on true, :note 38, :velocity 64, :time 73375.0}
+ {:on false, :note 38, :velocity 0, :time 73498.95833333334}
+ {:on true, :note 47, :velocity 64, :time 73500.0}
+ {:on false, :note 47, :velocity 0, :time 73748.95833333334}
+ {:on true, :note 41, :velocity 64, :time 73750.0}
+ {:on false, :note 41, :velocity 0, :time 73998.95833333334}
  {:on true, :note 38, :velocity 64, :time 74000.0}
+ {:on true, :note 42, :velocity 64, :time 74000.0}
  {:on true, :note 35, :velocity 64, :time 74000.0}
  {:on false, :note 38, :velocity 0, :time 74248.95833333334}
+ {:on false, :note 42, :velocity 0, :time 74248.95833333334}
  {:on true, :note 38, :velocity 64, :time 74250.0}
+ {:on true, :note 42, :velocity 64, :time 74250.0}
  {:on false, :note 35, :velocity 0, :time 74373.95833333334}
  {:on true, :note 35, :velocity 64, :time 74375.0}
  {:on false, :note 38, :velocity 0, :time 74498.95833333334}
+ {:on false, :note 42, :velocity 0, :time 74498.95833333334}
  {:on true, :note 38, :velocity 64, :time 74500.0}
+ {:on true, :note 42, :velocity 64, :time 74500.0}
  {:on false, :note 35, :velocity 0, :time 74748.95833333334}
  {:on false, :note 38, :velocity 0, :time 74748.95833333334}
+ {:on false, :note 42, :velocity 0, :time 74748.95833333334}
  {:on true, :note 38, :velocity 64, :time 74750.0}
+ {:on true, :note 42, :velocity 64, :time 74750.0}
  {:on true, :note 35, :velocity 64, :time 74750.0}
  {:on false, :note 38, :velocity 0, :time 74998.95833333334}
+ {:on false, :note 42, :velocity 0, :time 74998.95833333334}
  {:on true, :note 50, :velocity 64, :time 75000.0}
  {:on false, :note 35, :velocity 0, :time 75123.95833333334}
  {:on false, :note 50, :velocity 0, :time 75123.95833333334}
@@ -715,6 +725,4 @@
  {:on true, :note 41, :velocity 64, :time 75750.0}
  {:on false, :note 41, :velocity 0, :time 75998.95833333334}
  {:on true, :note 57, :velocity 64, :time 76000.0}
- {:on false, :note 57, :velocity 0, :time 76498.95833333334}]
-
-)
+ {:on false, :note 57, :velocity 0, :time 76498.95833333334}])
